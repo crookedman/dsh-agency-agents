@@ -1555,12 +1555,12 @@ describe('@ 菜单分组标题本地化', () => {
   it('设置标题提供 GitHub 与问题反馈两个入口', () => {
     expect(SETTINGS_GITHUB_LINKS).toEqual([
       {
-        href: 'https://github.com/crooked-man-7/dsh-agency-agents',
+        href: 'https://github.com/crookedman/dsh-agency-agents',
         labelKey: 'settings.viewProject',
         icon: 'github',
       },
       {
-        href: 'https://github.com/crooked-man-7/dsh-agency-agents/issues',
+        href: 'https://github.com/crookedman/dsh-agency-agents/issues',
         labelKey: 'settings.feedback',
         icon: 'feedback',
       },

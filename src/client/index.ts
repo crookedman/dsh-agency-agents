@@ -170,12 +170,12 @@ type ClientContext = CordisClientContext & {
 /** 设置页标题旁的公开项目入口，和归档管理器保持一致。 */
 export const SETTINGS_GITHUB_LINKS = [
   {
-    href: 'https://github.com/crooked-man-7/dsh-agency-agents',
+    href: 'https://github.com/crookedman/dsh-agency-agents',
     labelKey: 'settings.viewProject',
     icon: 'github',
   },
   {
-    href: 'https://github.com/crooked-man-7/dsh-agency-agents/issues',
+    href: 'https://github.com/crookedman/dsh-agency-agents/issues',
     labelKey: 'settings.feedback',
     icon: 'feedback',
   },

@@ -12,7 +12,7 @@
 
   [![npm package](https://img.shields.io/npm/v/%40crookedman%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crookedman/dsh-agency-agents)
   [![许可证：Apache-2.0](https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-blue.svg)](LICENSE)
-  [![GitHub](https://img.shields.io/badge/GitHub-crooked--man--7-181717.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
+  [![GitHub](https://img.shields.io/badge/GitHub-crookedman-181717.svg)](https://github.com/crookedman/dsh-agency-agents)
 </div>
 
 > 本 README 描述 1.2.28。
@@ -48,7 +48,7 @@ dsh plugin --profile desktop add @crookedman/dsh-agency-agents@1.2.28
 从源码构建：
 
 ```powershell
-git clone https://github.com/crooked-man-7/dsh-agency-agents.git
+git clone https://github.com/crookedman/dsh-agency-agents.git
 cd dsh-agency-agents
 pnpm install
 pnpm build

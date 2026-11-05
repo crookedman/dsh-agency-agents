@@ -75,7 +75,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crooked-man-7/dsh-agency-agents.git"
+    "url": "https://github.com/crookedman/dsh-agency-agents.git"
   },
   "publishConfig": {
     "access": "public",

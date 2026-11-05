@@ -12,7 +12,7 @@
 
   [![npm package](https://img.shields.io/npm/v/%40crookedman%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crookedman/dsh-agency-agents)
   [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
-  [![GitHub](https://img.shields.io/badge/GitHub-crooked--man--7-181717.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
+  [![GitHub](https://img.shields.io/badge/GitHub-crookedman-181717.svg)](https://github.com/crookedman/dsh-agency-agents)
 </div>
 
 > This README describes version 1.2.28.
@@ -53,7 +53,7 @@ Replace `desktop` with the profile you use (for example `web`). To upgrade, reru
 From source:
 
 ```powershell
-git clone https://github.com/crooked-man-7/dsh-agency-agents.git
+git clone https://github.com/crookedman/dsh-agency-agents.git
 cd dsh-agency-agents
 pnpm install
 pnpm build
