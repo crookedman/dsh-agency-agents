@@ -1,4 +1,11 @@
 # 更新日志
+## [1.2.29] - 2026-11-05
+
+### 变更
+
+- **项目地址跟随 GitHub 账号改名**：仓库由 `crooked-man-7/dsh-agency-agents` 迁移到 `crookedman/dsh-agency-agents`，`package.json` 的 repository 元数据、README 徽章与链接、设置页「查看项目 / 反馈问题」入口、以及发布校验断言同步更新。
+- **npm 发布身份**：本插件以 `@crookedman/dsh-agency-agents` 发布，版本号延续上游历史（`1.2.28` 是首个使用新作用域的版本）。
+
 ## [1.2.28] - 2026-11-05
 
 ### 修复

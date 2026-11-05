@@ -1,4 +1,11 @@
 # Changelog
+## [1.2.29] - 2026-11-05
+
+### Changes
+
+- **Project URLs follow the renamed GitHub account**: the repository moved from `crooked-man-7/dsh-agency-agents` to `crookedman/dsh-agency-agents`; the `package.json` repository metadata, README badges and links, the settings-page project and issues links, and the release verification check were updated to match.
+- **npm identity**: the plugin publishes as `@crookedman/dsh-agency-agents`, continuing the upstream version history (`1.2.28` was the first release under the new scope).
+
 ## [1.2.28] - 2026-11-05
 
 ### Fixes

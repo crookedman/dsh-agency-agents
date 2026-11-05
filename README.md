@@ -15,7 +15,7 @@
   [![GitHub](https://img.shields.io/badge/GitHub-crookedman-181717.svg)](https://github.com/crookedman/dsh-agency-agents)
 </div>
 
-> 本 README 描述 1.2.28。
+> 本 README 描述 1.2.29。
 > 本插件是社区维护的 DeepSeek Harness（DSH）插件，并非 DeepSeek AI 官方产品。
 
 ## 这是什么

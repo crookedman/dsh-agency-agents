@@ -15,7 +15,7 @@
   [![GitHub](https://img.shields.io/badge/GitHub-crookedman-181717.svg)](https://github.com/crookedman/dsh-agency-agents)
 </div>
 
-> This README describes version 1.2.28.
+> This README describes version 1.2.29.
 > This is a community-maintained DeepSeek Harness (DSH) plugin, not an official DeepSeek AI product.
 
 ## What this is
