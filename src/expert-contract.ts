@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { expertModelBindingSchema } from './expert-model.js'
 
 /** Host 与 Client 共用的自定义专家数据契约，不包含运行时服务依赖。 */
 export const DEFAULT_EXPERT_EMOJI = '🧩'
@@ -45,6 +46,8 @@ export type ExpertSummary = z.infer<typeof expertSummarySchema>
 export const catalogSnapshotSchema = z.object({
   experts: z.array(expertSummarySchema),
   enabled: z.array(z.string()), revision: z.number().int().min(0),
+  // 旧版宿主不带该字段：缺省表示所有专家都按父 Agent 的模型运行。
+  models: z.array(expertModelBindingSchema).optional(),
 })
 export type CatalogSnapshot = z.infer<typeof catalogSnapshotSchema>
 export const expertEditSchema = customExpertSchema.omit({ deleted: true, wasEnabled: true })
@@ -58,6 +61,7 @@ const messages = {
   division: ['请选择有效的专家分类。', 'Choose a valid expert category.'],
   limit: ['自定义专家数量已达到上限（200 位），请先删除不再使用的专家。', 'The limit of 200 custom experts has been reached. Delete an unused expert first.'],
   conflict: ['专家配置已被其他窗口修改，请刷新后重试。', 'Expert settings were changed in another window. Refresh and try again.'],
+  model: ['专家模型配置不合法或重复，请重新选择模型。', 'The expert model binding is invalid or duplicated. Choose the model again.'],
 } as const
 export type CustomErrorKey = keyof typeof messages
 export function customError(key: CustomErrorKey, locale: 'zh' | 'en'): Error {

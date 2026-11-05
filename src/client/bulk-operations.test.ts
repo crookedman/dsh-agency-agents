@@ -152,7 +152,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
     const staleState = {
       revision: 1,
       enabled: new Set(['expert-0', 'expert-1']),
-      experts: [],
+      experts: [], models: [],
     }
     const plan: BulkOperationPlan = {
       type: 'enable',
@@ -163,7 +163,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
     const concurrentLatestState = {
       revision: 2,
       enabled: new Set(['expert-0', 'expert-1', 'expert-concurrent']),
-      experts: [],
+      experts: [], models: [],
     }
 
     let optimisticNext!: Set<string>
@@ -182,7 +182,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
         write: async (next, revision) => {
           submittedNext = next
           submittedRevision = revision
-          return { revision, enabled: next, experts: [] }
+          return { revision, enabled: next, experts: [], models: [] }
         },
       },
     )
@@ -216,7 +216,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
       { type: 'disable-all' },
       {
         onOptimistic: () => { optimisticCalled = true },
-        write: async () => { writeCalled = true; return { revision: 1, enabled: new Set(), experts: [] } },
+        write: async () => { writeCalled = true; return { revision: 1, enabled: new Set(), experts: [], models: [] } },
       },
     )
 
@@ -229,7 +229,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
     let internalStore = {
       revision: 1,
       enabled: new Set(['expert-0']),
-      experts: [],
+      experts: [], models: [],
     }
     const dynamicFreshGetter = () => internalStore
     const staleClosureSnapshot = internalStore
@@ -244,7 +244,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
     internalStore = {
       revision: 2,
       enabled: new Set(['expert-0', 'expert-concurrent']),
-      experts: [],
+      experts: [], models: [],
     }
 
     // 1. 若使用陈旧闭包快照 getter：
@@ -253,7 +253,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
       onOptimistic: () => undefined,
       write: async (next, revision) => {
         staleSubmittedNext = next
-        return { revision, enabled: next, experts: [] }
+        return { revision, enabled: next, experts: [], models: [] }
       },
     })
     expect(staleSubmittedNext.has('expert-concurrent')).toBe(false) // 证明静态闭包必定复现缺陷
@@ -264,7 +264,7 @@ describe('performBulkCommit 生产执行调度器与并发安全契约', () => {
       onOptimistic: () => undefined,
       write: async (next, revision) => {
         freshSubmittedNext = next
-        return { revision, enabled: next, experts: [] }
+        return { revision, enabled: next, experts: [], models: [] }
       },
     })
     expect(freshSubmittedNext.has('expert-concurrent')).toBe(true) // 证明动态 getter 成功守护并发

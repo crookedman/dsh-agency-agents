@@ -117,7 +117,7 @@ export function hostHasAgentTeam(): boolean {
         throw error;
     }
 }
-export function detectTeamEngine(service: unknown, supported: boolean, toolsReady = true, maxDepth?: number, locale: 'zh' | 'en' = 'zh'): TeamEngineStatus {
+export function detectTeamEngine(service: unknown, supported: boolean, toolsReady = true, maxDepth?: number, locale: 'zh' | 'en' = 'zh', requiresModelRoute = false): TeamEngineStatus {
     const tx = (key: string, values?: readonly unknown[]) => teamText(locale, key, values);
 
     const compatible = isNativeTeamService(service);
@@ -127,12 +127,15 @@ export function detectTeamEngine(service: unknown, supported: boolean, toolsRead
         return { state: 'disabled', mode: 'subagent', reason: tx("Agent Team 服务或当前会话工具尚未就绪。"), recommendation: tx("建议在插件页开启 Agent Team 的 Host 与 Web 层，并重新加载会话；未开启也可继续使用普通专家团。") };
     if (maxDepth !== undefined)
         return { state: 'enabled', mode: 'subagent', reason: tx("原生 Agent Team 暂不支持本插件配置的深度限制，本次使用普通子代理以保留该限制。"), recommendation: '' };
+    // 原生 spawnTeammate 只接受 provider，不接受 model：成员级模型只能由普通子代理路径落实。
+    if (requiresModelRoute)
+        return { state: 'enabled', mode: 'subagent', reason: tx("原生 Agent Team 不支持专家级模型，本次使用普通子代理以应用模型设置。"), recommendation: '' };
     return { state: 'enabled', mode: 'native', reason: tx("Agent Team 已启用，使用原生团队协作。"), recommendation: '' };
 }
-export function resolveTeamEngine(ctx: Context, agent?: Agent, maxDepth?: number) {
+export function resolveTeamEngine(ctx: Context, agent?: Agent, maxDepth?: number, requiresModelRoute = false) {
     const service: unknown = ctx.get('agentTeams');
     const toolsReady = !isNativeTeamService(service) || !agent || ['spawn_teammate', 'send_message', 'wait_agent', 'team_task_create', 'team_task_update', 'team_task_list'].every(name => agent.ctx?.tools?.get?.(name, agent) !== undefined);
-    return { service: isNativeTeamService(service) ? service : undefined, status: detectTeamEngine(service, isNativeTeamService(service) || hostHasAgentTeam(), toolsReady, maxDepth, readHostLocale(ctx)) };
+    return { service: isNativeTeamService(service) ? service : undefined, status: detectTeamEngine(service, isNativeTeamService(service) || hostHasAgentTeam(), toolsReady, maxDepth, readHostLocale(ctx), requiresModelRoute) };
 }
 const activeLeads = new WeakSet<object>();
 /** 显示名称可以变化；此持久标识必须保持原算法，以复用已存在的队友。 */

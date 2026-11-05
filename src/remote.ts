@@ -13,6 +13,7 @@ import type { ProposalRegistry, StoredProposal, LatestProposal } from './creatio
 import { settingsNamespaceCompat } from './settings-compat.js'
 import { AGENCY_LIBRARY_SERVICE, type AgencyExpertLibrary } from './expert-library.js'
 import type { CatalogSnapshot, CustomExpertInput } from './expert-contract.js'
+import { emptyModelCatalog, type ExpertModelRoute, type ModelCatalog } from './expert-model.js'
 
 export { readExpertPrompt, readLocalizedExpertPrompt } from './index.js'
 
@@ -93,6 +94,67 @@ export default class AgencyAgentsRemote extends TypertRemoteService {
   @Remote('deleteCustomExpert')
   async deleteCustomExpert(slug: string, expectedRevision: number): Promise<CatalogSnapshot> {
     return this.library().deleteCustom(slug, expectedRevision)
+  }
+
+  /** 写入或清除一位专家的模型路由；null 表示恢复为「按父 Agent」的默认继承。 */
+  @Remote('setExpertModel')
+  async setExpertModel(slug: string, route: ExpertModelRoute | null, expectedRevision: number): Promise<CatalogSnapshot> {
+    return this.library().setExpertModel(slug, route, expectedRevision)
+  }
+
+  /**
+   * 宿主 `llm` 已注册的 provider 及可发现模型，供设置页的模型选择器使用。
+   * 单个 provider 目录读取失败时保留该 provider 并附上原因，不拖垮整页。
+   */
+  @Remote('listModels')
+  async listModels(): Promise<ModelCatalog> {
+    const llm = this.llmService()
+    if (llm === undefined) return emptyModelCatalog()
+    const providers: ModelCatalog['providers'] = []
+    for (const provider of llm.listProviders()) {
+      if (typeof provider?.id !== 'string' || provider.id === '') continue
+      const name = typeof provider.name === 'string' && provider.name !== '' ? provider.name : provider.id
+      try {
+        const models = await llm.listModels(provider.id)
+        providers.push({
+          provider: provider.id,
+          name,
+          models: models
+            .filter(model => typeof model?.id === 'string' && model.id !== '')
+            .map(model => ({
+              id: model.id,
+              name: typeof model.name === 'string' && model.name !== '' ? model.name : model.id,
+              ...(typeof model.description === 'string' && model.description !== '' ? { description: model.description } : {}),
+            })),
+        })
+      } catch (error: unknown) {
+        providers.push({ provider: provider.id, name, models: [], error: error instanceof Error ? error.message : String(error) })
+      }
+    }
+    return { providers }
+  }
+
+  /** 读取宿主 llm 服务；未注册或版本过旧时返回 undefined，由调用方给出空目录。 */
+  private llmService(): {
+    listProviders: () => ReadonlyArray<{ id: string; name?: string }>
+    listModels: (provider: string) => Promise<ReadonlyArray<{ id: string; name?: string; description?: string }>>
+  } | undefined {
+    type HostLlm = {
+      listProviders?: () => ReadonlyArray<{ id: string; name?: string }>
+      listModels?: (provider: string) => Promise<ReadonlyArray<{ id: string; name?: string; description?: string }>>
+    }
+    try {
+      const llm = this.ctx.get('llm') as HostLlm | undefined
+      const listProviders = llm?.listProviders
+      const listModels = llm?.listModels
+      if (typeof listProviders !== 'function' || typeof listModels !== 'function' || llm === undefined) return undefined
+      return {
+        listProviders: () => listProviders.call(llm),
+        listModels: (provider: string) => listModels.call(llm, provider),
+      }
+    } catch {
+      return undefined
+    }
   }
 
   /** 返回配置中记录的启用项以兼容旧调用方；实际可召唤项请读取 getCatalog().enabled。 */

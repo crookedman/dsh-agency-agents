@@ -1,4 +1,26 @@
 # Changelog
+## [1.2.28] - 2026-11-05
+
+### Fixes
+
+- **The expert-card model badge no longer pushes the title row up**: the badge is capped to a maximum width and ellipsized (hover shows the full provider/model), and the metadata row is locked to a single line, so a long model name can no longer squeeze the expert name out of the card header.
+
+## [1.2.27] - 2026-11-05
+
+### Features
+
+- **Expert model binding**:
+  - **Per-expert provider and model**: every expert card in **Settings → Experts** gains a *Model* action that pins a provider and model for that single expert. The picker is filled from the host `llm` service's registered catalog — no hardcoded list, and not limited to the `subagentModelSelection` allowlist.
+  - **Unset means inherit**: experts without a binding send no model fields at all, so the subagent keeps the parent agent's current provider/model (host `resolveChildAgentOptions()` semantics). Upgrading changes no existing behavior.
+  - **Persisted by slug**: bindings live in `agency-agents.expertModels`, survive custom expert renames, are cleaned up in the same settings transaction when the expert is deleted, and re-binding replaces the previous entry.
+  - **Custom expert editor parity**: the create/edit dialog exposes the same picker and persists the choice after saving.
+  - **Teams fall back automatically**: native Agent Team `spawnTeammate` accepts no per-member model, so a team containing any bound member runs on standard subagents; a provider without `agentOptions` fails loudly instead of silently running on the parent model.
+
+
+[简体中文](CHANGELOG.zh-CN.md)
+
+This file records features and upgrade boundaries. npm and GitHub Releases remain the publication source of truth.
+
 ## [1.2.26] - 2026-11-04
 
 ### Compatibility & Dependencies

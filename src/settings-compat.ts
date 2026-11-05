@@ -111,6 +111,7 @@ export function hasAgencySettingsData(value: AgencySettings): boolean {
     || (value.customExperts?.length ?? 0) > 0
     || (value.customTeams?.length ?? 0) > 0
     || (value.enabledTeams?.length ?? 0) > 0
+    || (value.expertModels?.length ?? 0) > 0
 }
 
 /** 从插件配置读取启用名单。volatile 引用每次调用都重新取值，并复制冻结快照。 */
@@ -120,6 +121,7 @@ export function readAgencySettings(config: object, locale: 'zh' | 'en' = 'zh'): 
     customExperts?: unknown
     customTeams?: unknown
     enabledTeams?: unknown
+    expertModels?: unknown
     entryLocation?: unknown
     sidebarEntry?: unknown
     onlineUpdate?: unknown
@@ -137,6 +139,7 @@ export function readAgencySettings(config: object, locale: 'zh' | 'en' = 'zh'): 
     customExperts: objectList(unwrapLive(record.customExperts)) as AgencySettings['customExperts'],
     customTeams: objectList(unwrapLive(record.customTeams)) as AgencySettings['customTeams'],
     enabledTeams: stringList(unwrapLive(record.enabledTeams)),
+    expertModels: objectList(unwrapLive(record.expertModels)) as AgencySettings['expertModels'],
     entryLocation: location,
     sidebarEntry: typeof rawSidebar === 'boolean' ? rawSidebar : (location !== 'settings'),
     onlineUpdate: typeof rawUpdate === 'boolean' ? rawUpdate : undefined,
@@ -161,6 +164,7 @@ export function agencySettingsFromLegacyDocument(document: unknown): AgencySetti
     customExperts: objectList(record.customExperts) as AgencySettings['customExperts'],
     customTeams: objectList(record.customTeams) as AgencySettings['customTeams'],
     enabledTeams: stringList(record.enabledTeams),
+    expertModels: objectList(record.expertModels) as AgencySettings['expertModels'],
   }
 }
 

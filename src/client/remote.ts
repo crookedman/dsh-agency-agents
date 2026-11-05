@@ -8,6 +8,7 @@ import type { StoredProposal, LatestProposal } from '../creation-tools.js'
 import type { RemoteResult, TypertRemoteContribution } from '@deepseek-ai/dsh-typert-protocol'
 import { AGENCY_AGENTS_DESCRIPTORS } from '../remote-contract.js'
 import type { CatalogSnapshot, CustomExpertInput } from '../expert-contract.js'
+import type { ExpertModelRoute, ModelCatalog } from '../expert-model.js'
 
 export interface AgencyTeamsRemote {
   getTeams(): Promise<RemoteResult<TeamSnapshot>>
@@ -20,6 +21,10 @@ export interface AgencyCatalogRemote {
   getCustomExpert(slug: string): Promise<RemoteResult<CustomExpertInput>>
   saveCustomExpert(expert: CustomExpertInput, enabled: boolean, expectedRevision: number): Promise<RemoteResult<CatalogSnapshot>>
   deleteCustomExpert(slug: string, expectedRevision: number): Promise<RemoteResult<CatalogSnapshot>>
+  /** 写入或清除一位专家的模型路由；null 表示恢复「按主 Agent」。 */
+  setExpertModel(slug: string, route: ExpertModelRoute | null, expectedRevision: number): Promise<RemoteResult<CatalogSnapshot>>
+  /** 宿主已注册的 provider/模型目录，供模型选择器使用。 */
+  listModels(): Promise<RemoteResult<ModelCatalog>>
 }
 
 export interface AgencyCreationRemote {
@@ -51,6 +56,8 @@ declare module '@deepseek-ai/dsh-typert-protocol' {
     'agencyAgents/getCustomExpert': AgencyCatalogRemote['getCustomExpert']
     'agencyAgents/saveCustomExpert': AgencyCatalogRemote['saveCustomExpert']
     'agencyAgents/deleteCustomExpert': AgencyCatalogRemote['deleteCustomExpert']
+    'agencyAgents/setExpertModel': AgencyCatalogRemote['setExpertModel']
+    'agencyAgents/listModels': AgencyCatalogRemote['listModels']
     'agencyAgents/getEnabled': () => Promise<RemoteResult<AgencyAgentsEnabledState>>
     'agencyAgents/setEnabled': (enabled: string[], expectedRevision: number) => Promise<RemoteResult<AgencyAgentsEnabledState>>
     'agencyAgents/getPrompt': (slug: string, division: string) => Promise<RemoteResult<AgencyAgentsPrompt>>

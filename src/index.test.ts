@@ -244,7 +244,7 @@ describe('DSH settings 兼容层', () => {
         },
       } as unknown as Context
       await recoverImportedAgencySettings(ctx, 'agency-agents', () => ({ enabled: [] }), () => false, JSON.parse)
-      expect(written).toEqual([{ enabled: ['reviewer'], customExperts: [], customTeams: [], enabledTeams: [] }])
+      expect(written).toEqual([{ enabled: ['reviewer'], customExperts: [], customTeams: [], enabledTeams: [], expertModels: [] }])
       written.length = 0
       await writeFile(join(home, 'settings.yaml'), 'agency-agents: {}\n', 'utf8')
       await recoverImportedAgencySettings(ctx, 'agency-agents', () => ({ enabled: [] }), () => false, JSON.parse)
@@ -291,7 +291,7 @@ describe('DSH settings 兼容层', () => {
         },
       } as unknown as Context
       await recoverImportedAgencySettings(ctx, 'agency-agents', () => ({ enabled: [] }), () => false, JSON.parse)
-      expect(written).toEqual([{ enabled: ['reviewer'], customExperts: [], customTeams: [], enabledTeams: [] }])
+      expect(written).toEqual([{ enabled: ['reviewer'], customExperts: [], customTeams: [], enabledTeams: [], expertModels: [] }])
     } finally {
       await rm(home, { recursive: true, force: true })
     }

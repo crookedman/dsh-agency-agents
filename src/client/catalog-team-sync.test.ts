@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { acceptCatalog, catalogState, subscribeCatalog } from './catalog.js'
+import { acceptCatalog, acceptEnabled, catalogState, expertModelOf, subscribeCatalog } from './catalog.js'
 import { acceptTeams, teamState, subscribeTeams } from './team-cache.js'
 import type { AgencyCatalogRemote, AgencyTeamsRemote } from './remote.js'
 import type { CatalogSnapshot } from '../expert-contract.js'
@@ -87,5 +87,23 @@ describe('专家库与专家团名册缓存联动 (Issue #33)', () => {
     expect(catalogState(mockRemote).experts.some(e => e.slug === 'custom-expert-abc')).toBe(true)
 
     unsubscribe()
+  })
+
+  it('专家模型绑定随名册同步：接受名册后按 slug 可查，启用状态变化不会清空绑定', () => {
+    const remote = {} as AgencyCatalogRemote
+    acceptCatalog(remote, {
+      experts: [],
+      enabled: [],
+      models: [{ slug: 'base-expert-1', provider: 'openai', model: 'gpt-5.1' }],
+      revision: 3,
+    })
+    expect(catalogState(remote).models).toEqual([{ slug: 'base-expert-1', provider: 'openai', model: 'gpt-5.1' }])
+    expect(expertModelOf(catalogState(remote), 'base-expert-1')).toEqual({ provider: 'openai', model: 'gpt-5.1' })
+    expect(expertModelOf(catalogState(remote), 'missing')).toBeUndefined()
+
+    // 启停只返回 enabled/revision，本地既有绑定必须原样保留。
+    acceptEnabled(remote, { enabled: [], revision: 4 })
+    expect(catalogState(remote).models).toHaveLength(1)
+    expect(catalogState(remote).revision).toBe(4)
   })
 })

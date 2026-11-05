@@ -27,6 +27,7 @@ Choose a specialist in DSH for code review, design, operations, or research. All
 - **Dual-surface access & wide layout**: Access management from **Settings → Experts** or enable the persistent primary sidebar entry to open in a dedicated 960px centered workspace view.
 - **Conversational creation with AI**: Dual-mode creation via \"Create with AI\" jumps to main chat with auto-prefilled prompts. Agents render structured Markdown previews in chat with multi-turn revisions, followed by a native host Ask interaction confirmation before pre-filling into editor modals/drawers for human-in-the-loop review.
 - **Smart bulk batch actions**: Compact native dropdown menu in the filter bar with dynamic filter linkage for \"Enable filtered (N) / Disable filtered (M)\" and \"Enable all (331) / Disable all\", protected by confirmation dialogs and atomic scheduling.
+- **Expert model binding**: Pin a provider and model per expert from the host's registered model catalog; unbound experts keep following the parent agent's model, and bindings survive custom expert renames.
 - **Complete roster of 331 domain experts**: Covers 22 standard divisions from engineering, product, and design to marketing, sales, and legal, with instant prefix matching.
 - **Multi-agent team collaboration**: 5 high-impact built-in review teams and support for up to 100 custom teams with automated handoffs, parallel execution, or debate modes.
 - **Fast invocation in composer**: Summon specialists or teams via the `@` trigger or composer picker button, instantly inserting task examples without accidental sends.
@@ -100,7 +101,16 @@ Real-time expert and expert team suggestions displayed as a native dropdown at t
 - **One-Click Mention & Deduplication**: Click candidate items to insert references directly into the input via host `insertReference`; already referenced experts are automatically filtered out from suggestions, auto-dismissing on outside clicks or empty input;
 - **Dedicated Extension Toggle**: Toggle under **Settings → Plugins** (default off), supporting host volatile hot-reloading and persistence.
 
-> This README describes version 1.2.26. **This is a breaking upgrade: DeepSeek Harness 0.1.x is no longer supported.** Installation on an older host is rejected by the version gate. npm and GitHub Releases determine publication status. See the [changelog](CHANGELOG.md) for the full boundary. Expert and team settings are retained; back up settings before downgrading to 1.0.x.
+### Expert Model Binding
+
+Every expert card in **Settings → Experts** gains a **Model** action that pins a provider and model for that single expert:
+
+- **Unset means inherit**: experts without a binding receive no model fields at all, so the subagent keeps the parent agent's current provider/model — exactly the host `resolveChildAgentOptions()` inheritance, so upgrades change nothing by default;
+- **Stored per expert**: bindings persist as `agency-agents.expertModels` keyed by expert slug, survive custom expert renames, and are cleaned up when the expert is deleted;
+- **Catalog comes from the host**: the picker reads the providers and models registered by the host `llm` service instead of a hardcoded list, and is not limited to the `subagentModelSelection` allowlist; a failing provider is reported inline without breaking the picker;
+- **Teams fall back automatically**: native Agent Team `spawnTeammate` accepts no per-member model, so a team containing any bound member runs on standard subagents to honor the setting; a provider without `agentOptions` fails loudly rather than silently running on the parent model.
+
+> This README describes version 1.2.28. **This is a breaking upgrade: DeepSeek Harness 0.1.x is no longer supported.** Installation on an older host is rejected by the version gate. npm and GitHub Releases determine publication status. See the [changelog](CHANGELOG.md) for the full boundary. Expert and team settings are retained; back up settings before downgrading to 1.0.x.
 ## Screenshots
 
 The screenshots below show the 1.0.0 interface in Chinese. Experts and expert teams share the same settings page.

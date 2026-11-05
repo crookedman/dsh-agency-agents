@@ -5,6 +5,8 @@ import React from 'react'
 import { CategorySelect } from './category-select.js'
 import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { customExpertInputSchema, DEFAULT_EXPERT_EMOJI, type CatalogSnapshot, type CustomExpertInput } from '../expert-contract.js'
+import { sameExpertModelRoute, type ExpertModelRoute, type ModelCatalog } from '../expert-model.js'
+import { ModelPicker } from './expert-model-ui.js'
 import type { AgencyCatalogRemote } from './remote.js'
 import { EXPERT_AVATAR_URLS } from './avatars.js'
 import { EN_DIVISION, ZH_DIVISION } from '../names.js'
@@ -16,6 +18,8 @@ export interface CustomEditorProps {
   readonly expert?: CustomExpertInput
   readonly enabled: boolean
   readonly revision: number
+  /** 当前专家的模型路由；缺省表示按主 Agent。 */
+  readonly model?: ExpertModelRoute
   readonly divisions: readonly string[]
   readonly remote: AgencyCatalogRemote
   readonly t: TranslateNS<'agency'>
@@ -41,7 +45,18 @@ export function CustomExpertEditor(props: CustomEditorProps): React.ReactElement
   const saving = React.useRef(false)
   const [error, setError] = React.useState<string | null>(null)
   const [discard, setDiscard] = React.useState(false)
+  const [model, setModel] = React.useState<ExpertModelRoute | null>(props.model ?? null)
+  const [initialModel] = React.useState<ExpertModelRoute | null>(props.model ?? null)
+  const [modelCatalog, setModelCatalog] = React.useState<ModelCatalog | null>(null)
   const form = React.useRef<HTMLFormElement | null>(null)
+  // 模型目录按需拉取：打开编辑器才请求，不拖慢专家库首屏。
+  React.useEffect(() => {
+    let cancelled = false
+    void props.remote.listModels().then(result => {
+      if (!cancelled && result.ok) setModelCatalog(result.value)
+    }).catch(() => undefined)
+    return () => { cancelled = true }
+  }, [props.remote])
   const close = (): void => {
     if (saving.current) return
     if (JSON.stringify(draft) !== JSON.stringify(initial)) setDiscard(true)
@@ -83,7 +98,18 @@ export function CustomExpertEditor(props: CustomEditorProps): React.ReactElement
     setError(null)
     void props.remote.saveCustomExpert(parsed.data, enabled, revision).then(result => {
       if (!result.ok) throw new Error(result.error.message)
-      props.onSaved(result.value)
+      const saved = result.value
+      // 新建专家时 slug 由 Host 生成，只能按名称在回执名册里定位。
+      const slug = parsed.data.slug ?? saved.experts.find(item => item.custom && item.name === parsed.data.name)?.slug
+      const changed = !sameExpertModelRoute(model ?? undefined, initialModel ?? undefined)
+      if (slug === undefined || !changed) {
+        props.onSaved(saved)
+        return undefined
+      }
+      return props.remote.setExpertModel(slug, model, saved.revision).then(next => {
+        if (!next.ok) throw new Error(next.error.message)
+        props.onSaved(next.value)
+      })
     }).catch((cause: unknown) => {
       const message = cause instanceof Error ? cause.message : String(cause)
       const conflict = /changed since it was read|其他窗口|another window/iu.test(message);
@@ -135,6 +161,13 @@ export function CustomExpertEditor(props: CustomEditorProps): React.ReactElement
         id: 'aag-custom-division', value: draft.division, disabled: busy, label: props.t('custom.division'),
         onChange: (value: string) => set('division', value),
         options: props.divisions.map(division => ({ value: division, label: (props.locale === 'en' ? EN_DIVISION : ZH_DIVISION)[division] ?? division })),
+      })),
+    h('div', { className: 'aag-custom-field' },
+      h('label', null, props.t('model.button')),
+      modelCatalog === null ? h('p', { className: 'aag-model-note' }, props.t('model.loading')) : null,
+      h(ModelPicker, {
+        catalog: modelCatalog, value: model, disabled: busy, t: props.t,
+        onChange: (next: ExpertModelRoute | null) => setModel(next),
       })),
     h('div', { className: 'aag-custom-prompt-head' }, h('label', { htmlFor: 'aag-custom-prompt' }, props.t('custom.prompt')),
       draft.prompt === '' ? h(Button, { disabled: busy, onClick: () => set('prompt', props.t('custom.templateText')) }, props.t('custom.template')) : null),

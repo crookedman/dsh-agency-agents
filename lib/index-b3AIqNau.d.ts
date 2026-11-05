@@ -1,3 +1,4 @@
+import { z } from "zod";
 import schema from "@deepseek-ai/schemastery";
 import { Context } from "@deepseek-ai/cordis";
 import "@deepseek-ai/dsh-settings";
@@ -8,6 +9,37 @@ declare const ZH_NAME: Readonly<Record<string, string>>;
 //#region src/i18n.d.ts
 /** 与 DSH locale 插件一致的语言标识。 */
 type LocaleId = 'zh' | 'en';
+//#endregion
+//#region src/expert-model.d.ts
+/** 一条 provider/model 路由。provider 与 model 必须成对出现，宿主不接受单独覆盖。 */
+declare const expertModelRouteSchema: z.ZodObject<{
+  provider: z.ZodString;
+  model: z.ZodString;
+  reasoningEffort: z.ZodOptional<z.ZodString>;
+}, z.core.$strict>;
+type ExpertModelRoute = z.infer<typeof expertModelRouteSchema>;
+/** settings 中的持久条目：按专家 slug 记录一条路由。 */
+declare const expertModelBindingSchema: z.ZodObject<{
+  provider: z.ZodString;
+  model: z.ZodString;
+  reasoningEffort: z.ZodOptional<z.ZodString>;
+  slug: z.ZodString;
+}, z.core.$strict>;
+type ExpertModelBinding = z.infer<typeof expertModelBindingSchema>;
+/** 宿主 `llm` 服务已注册的 provider 及其可发现模型，供设置页的模型选择器使用。 */
+declare const modelCatalogSchema: z.ZodObject<{
+  providers: z.ZodArray<z.ZodObject<{
+    provider: z.ZodString;
+    name: z.ZodString;
+    models: z.ZodArray<z.ZodObject<{
+      id: z.ZodString;
+      name: z.ZodString;
+      description: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    error: z.ZodOptional<z.ZodString>;
+  }, z.core.$strip>>;
+}, z.core.$strip>;
+type ModelCatalog = z.infer<typeof modelCatalogSchema>;
 //#endregion
 //#region src/index.d.ts
 declare const name = "agency-agents";
@@ -61,6 +93,8 @@ interface Config {
   divisions: string[];
   /** 可选的正整数绝对子代理深度上限；未设置时沿用 provider 的默认行为。 */
   maxDepth?: number;
+  /** 专家级模型路由；未列出的专家沿用父会话模型。 */
+  expertModels?: ExpertModelBinding[];
   updater?: boolean;
   onlineUpdate?: boolean;
   sidebarEntry?: boolean;
@@ -113,4 +147,4 @@ declare function resolveExpert<T extends {
 }>(experts: readonly T[], query: unknown, locale?: LocaleId): T;
 declare function apply(ctx: Context, config: Config): void;
 //#endregion
-export { stripBom as C, validateSummonSpecs as D, unquote as E, ZH_NAME as O, sanitize as S, truncate as T, parseFrontmatter as _, SUMMON_EXPERTS_CONCURRENCY as a, resolveCatalogRoot as b, SummonExpertItemResult as c, createAgencyPersonaSource as d, inject as f, name as g, mapPool as h, DEFAULT_DIVISIONS as i, SummonExpertSpec as l, loadCatalog as m, AgencyPersonaSource as n, SUMMON_EXPERTS_MAX as o, liveSchemaField as p, Config as r, SUMMON_TASK_MAX_CHARS as s, AGENCY_PERSONA_SERVICE as t, apply as u, readExpertPrompt as v, toSummonItemResult as w, resolveExpert as x, readLocalizedExpertPrompt as y };
+export { ZH_NAME as A, stripBom as C, validateSummonSpecs as D, unquote as E, ExpertModelRoute as O, sanitize as S, truncate as T, parseFrontmatter as _, SUMMON_EXPERTS_CONCURRENCY as a, resolveCatalogRoot as b, SummonExpertItemResult as c, createAgencyPersonaSource as d, inject as f, name as g, mapPool as h, DEFAULT_DIVISIONS as i, ModelCatalog as k, SummonExpertSpec as l, loadCatalog as m, AgencyPersonaSource as n, SUMMON_EXPERTS_MAX as o, liveSchemaField as p, Config as r, SUMMON_TASK_MAX_CHARS as s, AGENCY_PERSONA_SERVICE as t, apply as u, readExpertPrompt as v, toSummonItemResult as w, resolveExpert as x, readLocalizedExpertPrompt as y };

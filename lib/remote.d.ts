@@ -1,4 +1,4 @@
-import { v as readExpertPrompt, y as readLocalizedExpertPrompt } from "./index-LlkEql-u.js";
+import { O as ExpertModelRoute, k as ModelCatalog, v as readExpertPrompt, y as readLocalizedExpertPrompt } from "./index-b3AIqNau.js";
 import { z } from "zod";
 import { TypertRemoteService } from "@deepseek-ai/dsh-typert-protocol";
 import { Context } from "@deepseek-ai/cordis";
@@ -96,6 +96,12 @@ declare const catalogSnapshotSchema: z.ZodObject<{
   }, z.core.$strip>>;
   enabled: z.ZodArray<z.ZodString>;
   revision: z.ZodNumber;
+  models: z.ZodOptional<z.ZodArray<z.ZodObject<{
+    provider: z.ZodString;
+    model: z.ZodString;
+    reasoningEffort: z.ZodOptional<z.ZodString>;
+    slug: z.ZodString;
+  }, z.core.$strict>>>;
 }, z.core.$strip>;
 type CatalogSnapshot = z.infer<typeof catalogSnapshotSchema>;
 //#endregion
@@ -202,6 +208,15 @@ declare class AgencyAgentsRemote extends TypertRemoteService {
   /** 新建或更新自定义专家，同时提交启用状态；过期修订号拒绝写入。 */
   saveCustomExpert(expert: CustomExpertInput, enabled: boolean, expectedRevision: number): Promise<CatalogSnapshot>;
   deleteCustomExpert(slug: string, expectedRevision: number): Promise<CatalogSnapshot>;
+  /** 写入或清除一位专家的模型路由；null 表示恢复为「按父 Agent」的默认继承。 */
+  setExpertModel(slug: string, route: ExpertModelRoute | null, expectedRevision: number): Promise<CatalogSnapshot>;
+  /**
+   * 宿主 `llm` 已注册的 provider 及可发现模型，供设置页的模型选择器使用。
+   * 单个 provider 目录读取失败时保留该 provider 并附上原因，不拖垮整页。
+   */
+  listModels(): Promise<ModelCatalog>;
+  /** 读取宿主 llm 服务；未注册或版本过旧时返回 undefined，由调用方给出空目录。 */
+  private llmService;
   /** 返回配置中记录的启用项以兼容旧调用方；实际可召唤项请读取 getCatalog().enabled。 */
   getEnabled(): {
     enabled: string[];

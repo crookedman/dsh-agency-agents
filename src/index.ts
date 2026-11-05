@@ -52,6 +52,7 @@ import { createHostLocaleReader, formatHost, localizedExpertDescription, localiz
 import { isLiveValue, loadHostModule, readAgencySettings, recoverImportedAgencySettings, settingsNamespaceCompat, setAgencySidebarEntry, setAgencyOnlineUpdate, setAgencyComposerRecommend, getAgencyEntryLocation, setAgencyEntryLocation } from './settings-compat.js'
 import { registerPluginUpdater } from './plugin-updater.js'
 import { AGENCY_LIBRARY_SERVICE, createExpertLibrary, type AgencySettings } from './expert-library.js'
+import { expertAgentOptions, expertModelOverrides, type ExpertModelBinding, type ExpertModelRoute } from './expert-model.js'
 
 export const name = 'agency-agents'
 export const inject = ['tools', 'subagents', 'systemPrompt', 'settings', 'webServer']
@@ -204,6 +205,8 @@ export interface Config {
   divisions: string[]
   /** 可选的正整数绝对子代理深度上限；未设置时沿用 provider 的默认行为。 */
   maxDepth?: number
+  /** 专家级模型路由；未列出的专家沿用父会话模型。 */
+  expertModels?: ExpertModelBinding[]
   updater?: boolean
   onlineUpdate?: boolean
   sidebarEntry?: boolean
@@ -253,6 +256,7 @@ for (const [key, field] of [
   ['customExperts', schema.array(schema.any()).default([])],
   ['customTeams', schema.array(schema.any()).default([])],
   ['enabledTeams', schema.array(schema.string()).default([])],
+  ['expertModels', schema.array(schema.any()).default([])],
   ['entryLocation', schema.string()],
   ['sidebarEntry', schema.boolean()],
   ['onlineUpdate', schema.boolean()],
@@ -623,8 +627,16 @@ export function apply(ctx: Context, config: Config): void {
   const hostUpdateDisabled = (config as { updater?: unknown }).updater === false
   const maxDepth = normalizeMaxDepth(config.maxDepth)
   const settingsNamespace = settingsNamespaceCompat('agency-agents')
-  let settingsSource: () => AgencySettings = () => ({ enabled: [], customExperts: [] })
+  let settingsSource: () => AgencySettings = () => ({ enabled: [], customExperts: [], expertModels: [] })
   const enabledSet = (): ReadonlySet<string> => new Set(settingsSource().enabled)
+  /** 专家级模型路由：未配置的专家返回 undefined，子代理沿用父会话模型。 */
+  const expertModelRoute = (slug: string): ExpertModelRoute | undefined => expertModelOverrides(settingsSource().expertModels)[slug]
+  /** 团队里是否有成员配置了模型：原生 Agent Team 不接受成员级 model，此类团队须走普通子代理。 */
+  const teamHasModelRoute = (team: { members: ReadonlyArray<{ expertSlug: string }> }): boolean =>
+    team.members.some(member => expertModelRoute(member.expertSlug) !== undefined)
+  // reasoningEffort 在宿主侧是不透明的 branded id；插件只回传用户选中的原始字符串。
+  const subagentAgentOptions = (slug: string): SubagentStartRequest['agentOptions'] =>
+    expertAgentOptions(expertModelRoute(slug)) as SubagentStartRequest['agentOptions']
   const activeLocale = createHostLocaleReader(ctx)
   const teamTx = (key: string, values?: readonly unknown[]) => teamText(activeLocale(), key, values)
   const catalogRoot = resolveCatalogRoot(config.root)
@@ -1024,10 +1036,12 @@ export function apply(ctx: Context, config: Config): void {
     maxDepth?: number
     persona: string
     toolFilter: { deny: string[] }
+    /** 专家级模型路由；省略表示子代理沿用父会话当前的 provider/model。 */
+    agentOptions?: SubagentStartRequest['agentOptions']
   }
 
   async function startSubagentRun(providerName: string, options: ExpertSubagentStart): Promise<SubagentRunHandle> {
-    const { slug, persona, toolFilter, label, signal, prompt, parent, maxDepth } = options
+    const { slug, persona, toolFilter, label, signal, prompt, parent, maxDepth, agentOptions } = options
     const service = ctx.subagents as unknown as {
       start?: (name: string, request: SubagentStartRequest & { persona?: string; toolFilter?: { deny: string[] } }) => Promise<SubagentRun>
       startActivation?: (spec: {
@@ -1053,6 +1067,7 @@ export function apply(ctx: Context, config: Config): void {
             parent,
             prompt,
             ...(maxDepth === undefined ? {} : { maxDepth }),
+            ...(agentOptions === undefined ? {} : { agentOptions }),
           },
           signal: runSignal,
           delivery: 'caller',
@@ -1071,6 +1086,7 @@ export function apply(ctx: Context, config: Config): void {
         parent,
         signal: runSignal,
         ...(maxDepth === undefined ? {} : { maxDepth }),
+        ...(agentOptions === undefined ? {} : { agentOptions }),
         persona,
         toolFilter,
       })
@@ -1085,7 +1101,7 @@ export function apply(ctx: Context, config: Config): void {
     if (exec.agent === undefined) throw new Error(formatHost(locale, 'error.summonRequiresAgent'))
     const provider = ctx.subagents.getProvider(config.provider)
     if (provider === undefined) throw new Error(formatHost(locale, 'error.providerMissing', { provider: config.provider }))
-    const caps = provider.capabilities as { persona?: boolean; toolFilter?: boolean; depthLimit?: boolean }
+    const caps = provider.capabilities as { persona?: boolean; toolFilter?: boolean; depthLimit?: boolean; agentOptions?: boolean }
     // 0.2.0-rc.1 / 0.2.0-rc.2 still advertise persona/toolFilter; 0.2.1-rc.1 drops them.
     if (caps.persona !== undefined || caps.toolFilter !== undefined) {
       if (!caps.persona) throw new Error(formatHost(locale, 'error.providerNoPersona', { provider: config.provider }))
@@ -1095,6 +1111,11 @@ export function apply(ctx: Context, config: Config): void {
     const expert = resolveExpert((await library.catalog()).experts.filter(expert => !expert.conflict), query, locale)
     if (!enabledSet().has(expert.slug)) throw new Error(formatHost(locale, 'error.expertDisabled', { name: localizedExpertName(expert, locale) }))
     const { prompt: persona } = await personaSource.getPrompt(expert.slug, expert.division, locale)
+    // 未配置模型的专家不传 agentOptions，子代理沿用父会话当前模型。
+    const agentOptions = subagentAgentOptions(expert.slug)
+    if (agentOptions !== undefined && caps.agentOptions !== true) {
+      throw new Error(formatHost(locale, 'error.providerNoAgentOptions', { provider: config.provider, name: localizedExpertName(expert, locale) }))
+    }
     const run = await startSubagentRun(config.provider, {
       slug: expert.slug,
       label: localizedExpertName(expert, locale),
@@ -1103,6 +1124,7 @@ export function apply(ctx: Context, config: Config): void {
       persona: sanitize(persona),
       toolFilter: { deny: [...EXPERT_TOOL_DENY] },
       ...(maxDepth === undefined ? {} : { maxDepth }),
+      ...(agentOptions === undefined ? {} : { agentOptions }),
       signal: exec.signal,
     })
     const result = await awaitSubagentRun(run, exec.signal)
@@ -1205,7 +1227,7 @@ ctx.tools.register(localizeTeamTool(defineTool({ name: 'get_expert_team', descri
         const team = snapshot.teams.map(t => localizeTeam(t, activeLocale())).find(t => t.id === args.team || t.name === args.team || snapshot.teams.find(original => original.id === t.id)?.name === args.team);
         if (!team || !snapshot.enabledTeams.includes(team.id))
             throw new Error(teamTx("专家团未启用或不存在。"));
-        const engine = resolveTeamEngine(ctx, exec.agent, maxDepth).status;
+        const engine = resolveTeamEngine(ctx, exec.agent, maxDepth, teamHasModelRoute(team)).status;
         return { report: JSON.stringify({ ...team, engine, coordinator: effectiveCoordinator(team, activeLocale()), collaboration: teamCollaboration(team, activeLocale()), revision: snapshot.revision, instruction: teamTx("确认目标与评审范围后立即将简报传给 summon_expert_team，相关资料路径可直接交给专家阅读，主理人不要预先读完整个项目。只有确实无法确定评审对象时才询问；用户已明确整体评审后不再反复确认。若 engine.recommendation 非空，简短建议开启 Agent Team，但不阻断普通调用、不自行修改配置。原生模式返回的是启动确认，必须等待实际成员结论后才汇总。") }) };
     },
 }), activeLocale));
@@ -1219,7 +1241,7 @@ ctx.tools.register(localizeTeamTool(defineTool({ name: 'summon_expert_team', des
         const team = snapshot.teams.map(t => localizeTeam(t, activeLocale())).find(t => t.id === args.team || t.name === args.team || snapshot.teams.find(original => original.id === t.id)?.name === args.team);
         if (!team || !snapshot.enabledTeams.includes(team.id))
             throw new Error(teamTx("专家团未启用或不存在。"));
-        const engine = resolveTeamEngine(ctx, exec.agent, maxDepth);
+        const engine = resolveTeamEngine(ctx, exec.agent, maxDepth, teamHasModelRoute(team));
         const locale = activeLocale();
         if (engine.status.mode === 'native' && engine.service) {
             const result = await dispatchNativeTeam({ team, locale, experts: catalog.experts, enabled: catalog.enabled, task: String(args.task ?? ''), revision: snapshot.revision,
@@ -1228,18 +1250,23 @@ ctx.tools.register(localizeTeamTool(defineTool({ name: 'summon_expert_team', des
             return { report: JSON.stringify({ ...result, engine: engine.status }) };
         }
         const provider = ctx.subagents.getProvider(config.provider);
-        const teamCaps = provider?.capabilities as { persona?: boolean; toolFilter?: boolean; depthLimit?: boolean } | undefined
+        const teamCaps = provider?.capabilities as { persona?: boolean; toolFilter?: boolean; depthLimit?: boolean; agentOptions?: boolean } | undefined
         // 0.2.0-rc.1 / 0.2.0-rc.2 仍声明 persona/toolFilter；0.2.1-rc.1 不再声明，身份改在 agent/created 写入。
         const legacyTeamCaps = teamCaps !== undefined && (teamCaps.persona !== undefined || teamCaps.toolFilter !== undefined)
         if (!provider || (legacyTeamCaps && (!teamCaps?.persona || !teamCaps.toolFilter)) || (maxDepth !== undefined && !teamCaps?.depthLimit))
             throw new Error(teamTx("当前子代理服务不支持专家团所需的身份、工具过滤或深度限制。"));
+        // 只有真正会用到成员级模型的团队才要求该能力，未配置模型的团队仍可与旧 provider 协作。
+        if (teamHasModelRoute(team) && teamCaps?.agentOptions !== true)
+            throw new Error(teamTx("当前子代理服务不支持专家级模型，请清除模型设置或更换 provider。"));
         const result = await executeTeam({ team, locale, experts: catalog.experts, enabled: catalog.enabled, task: String(args.task ?? ''), revision: snapshot.revision, signal: exec.signal,
             readPersona: async (expert) => (await personaSource.getPrompt(expert.slug, expert.division, locale)).prompt,
             run: async (member: TeamMemberRun) => {
                 exec.signal?.throwIfAborted();
+                const agentOptions = subagentAgentOptions(member.slug);
                 const run = await startSubagentRun(config.provider, { slug: member.slug, label: member.name, parent: exec.agent!,
                     prompt: [{ type: 'text', text: member.prompt }], persona: sanitize(member.persona),
                     toolFilter: { deny: [...EXPERT_TOOL_DENY] },
+                    ...(agentOptions === undefined ? {} : { agentOptions }),
                     ...(maxDepth === undefined ? {} : { maxDepth }), signal: exec.signal });
                 const value = await awaitSubagentRun(run, exec.signal);
                 if (value.stopReason !== 'completed')

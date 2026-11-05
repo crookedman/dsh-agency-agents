@@ -41,11 +41,13 @@ import { setupSidebarEntry } from './bundle-config.js'
 import { resolveApiUrl } from '../api-base.js'
 export { resolveApiUrl }
 import { DEFAULT_EXPERT_EMOJI, type CustomExpertInput, type CatalogSnapshot } from '../expert-contract.js'
+import type { ExpertModelBinding, ExpertModelRoute } from '../expert-model.js'
 import { CustomExpertEditor, CustomDeleteDialog, CUSTOM_EDITOR_CSS } from './custom-editor.js'
 import { openGlobalDraftEditor } from './global-draft-dialog.js'
 import { CreateActionMenu } from './create-action-menu.js'
 import { triggerChatCreation, subscribeChatPrefill, takeChatPrefill, peekChatPrefill, applyPrefillToDom } from './prefill.js'
-import { acceptEnabled, acceptCatalog, catalogState, refreshCatalog, subscribeCatalog } from './catalog.js'
+import { acceptEnabled, acceptCatalog, catalogState, refreshCatalog, subscribeCatalog, expertModelOf } from './catalog.js'
+import { EXPERT_MODEL_CSS, ExpertModelBadge, ExpertModelDialog } from './expert-model-ui.js'
 import { refreshTeams, teamState } from './team-cache.js'
 import { installNativeTeamNames } from './native-team-names.js'
 import { AgentsNavIcon, installSettingsNavIcon } from './settings-nav-icon.js'
@@ -143,6 +145,13 @@ function Search(props: LineIconProps): React.ReactElement {
   return lineIcon(props,
     React.createElement('circle', { cx: 11, cy: 11, r: 8 }),
     React.createElement('path', { d: 'm21 21-4.3-4.3' }))
+}
+
+/** 芯片图标：专家级模型入口。 */
+function ModelIcon(props: LineIconProps): React.ReactElement {
+  return lineIcon(props,
+    React.createElement('rect', { x: 6, y: 6, width: 12, height: 12, rx: 2 }),
+    React.createElement('path', { d: 'M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4' }))
 }
 
 /**
@@ -696,6 +705,7 @@ interface EnabledState {
   readonly enabled: ReadonlySet<string>
   readonly revision: number
   readonly experts: readonly ExpertView[]
+  readonly models: readonly ExpertModelBinding[]
 }
 
 /** 将写失败映射到 agency 词条；非冲突错误返回 null，由调用方展示原始消息。 */
@@ -1361,8 +1371,9 @@ function ExpertCardsSettings(props: PropsLocale<'agency'> & {
   const saving = React.useRef(false)
   const [isSaving, setIsSaving] = React.useState(false)
   const [source, setSource] = React.useState<'all' | 'base' | 'custom'>('all')
-  const [editor, setEditor] = React.useState<{ expert?: CustomExpertInput; enabled: boolean; revision: number } | null>(null)
+  const [editor, setEditor] = React.useState<{ expert?: CustomExpertInput; enabled: boolean; revision: number; model?: ExpertModelRoute } | null>(null)
   const [deleting, setDeleting] = React.useState<ExpertView | null>(null)
+  const [modelTarget, setModelTarget] = React.useState<ExpertView | null>(null)
   const [deleteError, setDeleteError] = React.useState<string | null>(null)
   const [bulkConfirm, setBulkConfirm] = React.useState<{
     mode: 'enable' | 'disable'
@@ -1399,7 +1410,7 @@ function ExpertCardsSettings(props: PropsLocale<'agency'> & {
       promptLock.current = true
       void props.remote.getCustomExpert(expert.slug).then(result => {
         if (!result.ok) throw new Error(result.error.message)
-        setEditor({ expert: result.value, enabled, revision })
+        setEditor({ expert: result.value, enabled, revision, model: expertModelOf(current, expert.slug) })
       }).catch((cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause)))
         .finally(() => { promptLock.current = false })
     } else {
@@ -1733,13 +1744,15 @@ function ExpertCardsSettings(props: PropsLocale<'agency'> & {
           metadata: React.createElement(React.Fragment, null,
             React.createElement('span', { className: 'aag-division-pill' }, inputTriggerSourceName(expert.division, props.getActive())),
             expert.conflict ? React.createElement('span', { className: 'aag-custom-badge', title: props.t('custom.nameConflictHint') }, props.t('custom.nameConflict')) : null,
-            expert.custom ? React.createElement('span', { className: 'aag-custom-badge' }, props.t('custom.source')) : null
+            expert.custom ? React.createElement('span', { className: 'aag-custom-badge' }, props.t('custom.source')) : null,
+            React.createElement(ExpertModelBadge, { key: 'model', route: expertModelOf(state, expert.slug), t: props.t })
           ),
           description: displayDescription(expert, props.getActive()),
           enabled, disabled: isSaving || expert.conflict === true,
           enabledLabel: props.t('settings.enabled'), disabledLabel: props.t('settings.disabled'),
           toggle: () => toggle(expert.slug),
           moreItems: [
+            { id: 'model', label: props.t('model.button'), icon: React.createElement(ModelIcon, { size: 16, strokeWidth: 1.7, 'aria-hidden': true }), disabled: isSaving || expert.conflict === true, onSelect: () => setModelTarget(expert) },
             { id: 'edit', label: props.t(expert.custom ? 'custom.edit' : 'custom.copy'), icon: React.createElement(expert.custom ? EditIcon : Copy, { size: 16, strokeWidth: 1.7, 'aria-hidden': true }), disabled: isSaving, onSelect: () => openEditor(expert) },
             ...(expert.custom ? [{ id: 'delete', label: props.t('custom.delete'), icon: React.createElement(TrashIcon, { size: 16, strokeWidth: 1.7, 'aria-hidden': true }), danger: true, disabled: isSaving, onSelect: () => { setDeleting(expert); setDeleteError(null) } }] : []),
           ],
@@ -1759,6 +1772,20 @@ function ExpertCardsSettings(props: PropsLocale<'agency'> & {
     }),
     deleting === null ? null : React.createElement(CustomDeleteDialog, {
       name: deleting.name, busy: isSaving, error: deleteError, t: props.t, close: () => setDeleting(null), confirm: () => removeExpert(deleting.slug),
+    }),
+    modelTarget === null || state === null ? null : React.createElement(ExpertModelDialog, {
+      name: displayName(modelTarget, props.getActive()),
+      slug: modelTarget.slug,
+      value: expertModelOf(state, modelTarget.slug),
+      revision: state.revision,
+      remote: props.remote,
+      t: props.t,
+      onClose: () => setModelTarget(null),
+      onSaved: (catalog: CatalogSnapshot) => {
+        accept(catalog)
+        setModelTarget(null)
+        setNotice(props.t('model.saved'))
+      },
     }),
     openPrompt === null ? null : React.createElement(PromptDialog, {
       value: openPrompt, title: props.t('settings.promptTitle', { name: openPrompt.name }), closeLabel: props.t('settings.promptClose'), returnFocus: openPrompt.returnFocus, onClose: () => setOpenPrompt(null),
@@ -2003,7 +2030,7 @@ export async function apply(ctx: ClientContext): Promise<() => void> {
   ctx.effect(() => {
     const tag = document.createElement('style')
     tag.dataset.plugin = PLUGIN_ID
-    tag.textContent = CSS + CUSTOM_EDITOR_CSS
+    tag.textContent = CSS + CUSTOM_EDITOR_CSS + EXPERT_MODEL_CSS
     document.head.appendChild(tag)
     return () => { tag.remove() }
   }, 'agency-agents: style')

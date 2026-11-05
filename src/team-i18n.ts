@@ -36,6 +36,8 @@ export const TEAM_EN = {
   '当前宿主未检测到兼容的 Agent Team 能力，使用普通子代理。': 'No compatible Agent Team capability was found. Standard subagents will be used.',
   'Agent Team 服务或当前会话工具尚未就绪。': 'Agent Team services or conversation tools are not ready.',
   '原生 Agent Team 暂不支持本插件配置的深度限制，本次使用普通子代理以保留该限制。': 'Native Agent Team does not support the configured depth limit. Standard subagents will preserve that limit.',
+  '原生 Agent Team 不支持专家级模型，本次使用普通子代理以应用模型设置。': 'Native Agent Team does not support expert-level models. Standard subagents will apply the configured models.',
+  '当前子代理服务不支持专家级模型，请清除模型设置或更换 provider。': 'The subagent provider does not support expert-level models. Clear the model setting or switch providers.',
   'Agent Team 已启用，使用原生团队协作。': 'Agent Team is enabled. Native team collaboration will be used.',
   '当前会话正在创建专家团，请等待本次委派完成。': 'A team is being created in this conversation. Wait for dispatch to finish.',
   '专家队友仍在运行或不可恢复：{0}': 'The expert teammate is still running or cannot be resumed: {0}',

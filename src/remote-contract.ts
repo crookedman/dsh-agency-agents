@@ -2,6 +2,7 @@ import { teamInputSchema, teamSnapshotSchema } from './team-contract.js'
 import type { InvocationDescriptor, InvocationParameterDescriptor, TypertCodec } from '@deepseek-ai/dsh-typert-protocol'
 import { z } from 'zod'
 import { CUSTOM_EXPERT_SLUG, catalogSnapshotSchema, customExpertInputSchema, expertEditSchema } from './expert-contract.js'
+import { expertModelRouteSchema, modelCatalogSchema } from './expert-model.js'
 import { storedProposalSchema, latestProposalSchema } from './creation-tools.js'
 
 const enabledArraySchema = z.array(z.string())
@@ -63,6 +64,18 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     revisionParameter,
   ]),
   catalogMethod('deleteCustomExpert', [customSlugParameter, revisionParameter]),
+  // 专家级模型路由：null 表示清除绑定，恢复「按父 Agent」。
+  catalogMethod('setExpertModel', [
+    jsonParameter('slug', 'string', z.string().min(1).max(128)),
+    jsonParameter('model', 'ExpertModelRoute?', expertModelRouteSchema.nullable()),
+    revisionParameter,
+  ]),
+  {
+    id: '@michengai/dsh-agency-agents#agencyAgents/listModels',
+    service: 'agencyAgents', namespace: 'agencyAgents', method: 'listModels',
+    invocation: { kind: 'direct' }, parameters: [],
+    result: strictCodec('AgencyModelCatalog', modelCatalogSchema),
+  },
   {
     id: '@michengai/dsh-agency-agents#agencyAgents/getCustomExpert',
     service: 'agencyAgents', namespace: 'agencyAgents', method: 'getCustomExpert',

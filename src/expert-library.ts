@@ -5,6 +5,7 @@ import schema from '@deepseek-ai/schemastery'
 import type { SettingsPathOp } from '@deepseek-ai/dsh-settings'
 import { z } from 'zod'
 import { CUSTOM_EXPERT_LIMIT, CUSTOM_EXPERT_SLUG, customError, customExpertInputSchema, customExpertSchema, type CatalogSnapshot, type CustomExpert, type CustomExpertInput, type ExpertSummary } from './expert-contract.js'
+import { expertModelBindingsSchema, expertModelRouteSchema, type ExpertModelBinding, type ExpertModelRoute } from './expert-model.js'
 import { ZH_DIVISION } from './names.js'
 
 export const AGENCY_LIBRARY_SERVICE = 'agencyAgentsLibrary'
@@ -13,6 +14,8 @@ export interface AgencySettings {
   customExperts?: CustomExpert[]
   customTeams?: ExpertTeam[]
   enabledTeams?: string[]
+  /** 专家级模型路由；缺少某个 slug 表示该专家沿用父会话模型。 */
+  expertModels?: ExpertModelBinding[]
   entryLocation?: 'both' | 'sidebar' | 'settings'
   sidebarEntry?: boolean
   onlineUpdate?: boolean
@@ -25,6 +28,7 @@ export const agencySettingsSchema = schema.object({
   customExperts: schema.array(schema.any()).default([]),
   customTeams: schema.array(schema.any()).default([]),
   enabledTeams: schema.array(schema.string()).default([]),
+  expertModels: schema.array(schema.any()).default([]),
   entryLocation: schema.string(),
   sidebarEntry: schema.boolean(),
   onlineUpdate: schema.boolean(),
@@ -41,6 +45,12 @@ export function validateAgencySettings(value: AgencySettings, locale: 'zh' | 'en
     }
     teamIds.add(team.id)
     teamNames.add(normalizeName(team.name))
+  }
+  const models = expertModelBindingsSchema.parse(value.expertModels ?? [])
+  const modelSlugs = new Set<string>()
+  for (const binding of models) {
+    if (modelSlugs.has(binding.slug)) throw customError('model', locale)
+    modelSlugs.add(binding.slug)
   }
   const records = z.array(customExpertSchema).parse(value.customExperts ?? [])
   if (records.filter(item => !item.deleted).length > CUSTOM_EXPERT_LIMIT) throw customError('limit', locale)
@@ -64,6 +74,8 @@ export interface AgencyExpertLibrary {
   saveCustom(input: CustomExpertInput, enabled: boolean, expectedRevision: number): Promise<CatalogSnapshot>
   deleteCustom(slug: string, expectedRevision: number): Promise<CatalogSnapshot>
   setEnabled(enabled: string[], expectedRevision: number): Promise<{ enabled: string[]; revision: number }>
+  /** 写入或清除一位专家的模型路由；`null` 表示恢复为「按父 Agent」。 */
+  setExpertModel(slug: string, route: ExpertModelRoute | null, expectedRevision: number): Promise<CatalogSnapshot>
   cleanupDeleted(): Promise<void>
 }
 export const normalizeName = (value: string): string => value.trim().toLowerCase()
@@ -75,9 +87,13 @@ export function createExpertLibrary(
   divisions: readonly string[],
   locale: () => 'zh' | 'en',
 ): AgencyExpertLibrary {
-  const read = (): { enabled: string[]; customExperts: CustomExpert[] } => {
+  const read = (): { enabled: string[]; customExperts: CustomExpert[]; expertModels: ExpertModelBinding[] } => {
     const state = store.read()
-    return { enabled: state.enabled, customExperts: z.array(customExpertSchema).parse(state.customExperts ?? []) }
+    return {
+      enabled: state.enabled,
+      customExperts: z.array(customExpertSchema).parse(state.customExperts ?? []),
+      expertModels: expertModelBindingsSchema.parse(state.expertModels ?? []),
+    }
   }
   const checkRevision = (revision: number): void => {
     if (!Number.isSafeInteger(revision) || revision < 0 || revision !== store.revision()) throw customError('conflict', locale())
@@ -107,7 +123,13 @@ export function createExpertLibrary(
     const experts = [...ready,
       ...custom.map(expert => ({ ...expert, conflict: [...ready, ...custom.filter(other => other !== expert)].some(other => overlaps(expert, other)) }))]
     const available = new Set(experts.filter(expert => !expert.conflict).map(expert => expert.slug))
-    return { experts, enabled: [...new Set(state.enabled.filter(slug => available.has(slug)))], revision: store.revision() }
+    return {
+      experts,
+      enabled: [...new Set(state.enabled.filter(slug => available.has(slug)))],
+      revision: store.revision(),
+      // 只为当前可召唤的专家保留路由：冲突专家的绑定留在 settings 里，解决冲突后自动恢复。
+      models: state.expertModels.filter(binding => available.has(binding.slug)),
+    }
   }
   const assertWritable = (slug: string): void => {
     if (!CUSTOM_EXPERT_SLUG.test(slug)) throw customError('readonly', locale())
@@ -117,6 +139,7 @@ export function createExpertLibrary(
     await store.mutate([
       { op: 'set', path: ['customExperts'], value: activeRecords(state.customExperts) },
       { op: 'set', path: ['enabled'], value: [...new Set(state.enabled)] },
+      { op: 'set', path: ['expertModels'], value: state.expertModels.map(binding => ({ ...binding })) },
     ], revision)
     return library.catalog()
   }
@@ -146,7 +169,11 @@ export function createExpertLibrary(
       const next = state.customExperts.filter(item => item.slug !== expert.slug)
       next.push(expert)
       assertUnique(summary(expert), [...builtins, ...next.filter(item => !item.deleted && item.slug !== expert.slug).map(summary)])
-      return persist({ customExperts: next, enabled: [...state.enabled.filter(slug => slug !== expert.slug), ...(enabled ? [expert.slug] : [])] }, expectedRevision)
+      return persist({
+        customExperts: next,
+        enabled: [...state.enabled.filter(slug => slug !== expert.slug), ...(enabled ? [expert.slug] : [])],
+        expertModels: state.expertModels,
+      }, expectedRevision)
     },
     async deleteCustom(slug, expectedRevision) {
       assertWritable(slug)
@@ -156,6 +183,8 @@ export function createExpertLibrary(
       return persist({
         customExperts: state.customExperts.filter(item => item.slug !== slug),
         enabled: state.enabled.filter(item => item !== slug),
+        // 专家被删除后它的模型绑定没有意义，同一次事务里清掉。
+        expertModels: state.expertModels.filter(binding => binding.slug !== slug),
       }, expectedRevision)
     },
     async setEnabled(enabled, expectedRevision) {
@@ -170,6 +199,18 @@ export function createExpertLibrary(
         { op: 'set', path: ['enabled'], value: next },
       ], expectedRevision)
       return { enabled: next, revision: store.revision() }
+    },
+    async setExpertModel(slug, route, expectedRevision) {
+      const builtins = await base()
+      checkRevision(expectedRevision)
+      const state = read()
+      const available = new Set(project(builtins, state).experts.filter(expert => !expert.conflict).map(expert => expert.slug))
+      if (!available.has(slug)) throw customError('unavailable', locale())
+      const parsed = route === null ? null : expertModelRouteSchema.safeParse(route)
+      if (parsed !== null && !parsed.success) throw customError('model', locale())
+      const next = state.expertModels.filter(binding => binding.slug !== slug)
+      if (parsed !== null && parsed.success) next.push({ slug, ...parsed.data })
+      return persist({ ...state, expertModels: next }, expectedRevision)
     },
     async cleanupDeleted() {
       const state = read()
