@@ -69,7 +69,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
   function mockRequest(method: string, bodyObj?: unknown, headers: Record<string, string> = {}) {
     const bodyStr = bodyObj !== undefined ? (typeof bodyObj === 'string' ? bodyObj : JSON.stringify(bodyObj)) : ''
     const defaultHeaders = method === 'POST' ? {
-      'x-michengai-client': '1',
+      'x-crooked-man-client': '1',
       'content-type': 'application/json',
     } : {}
     const listeners: Record<string, Function[]> = {}
@@ -109,7 +109,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
 
   it('sidebar-entry GET 与 POST 正常更新持久化', async () => {
     const { routes, mockSettingsState } = setupHarness()
-    const handler = routes.get('/api/michengai/dsh-agency-agents/sidebar-entry')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/sidebar-entry')
     expect(handler).toBeDefined()
 
     // 1. GET 默认状态
@@ -144,7 +144,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
 
   it('online-update GET 与 POST 正常更新持久化', async () => {
     const { routes, mockSettingsState } = setupHarness()
-    const handler = routes.get('/api/michengai/dsh-agency-agents/online-update')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/online-update')
     expect(handler).toBeDefined()
 
     // 1. GET 默认状态
@@ -166,13 +166,13 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
     expect(getRes2.json).toEqual({ ok: true, enabled: false, locked: false })
   })
 
-  it('安全防护：缺少 x-michengai-client 标记头应返回 403，非法 Content-Type 返回 415，超限返回 413', async () => {
+  it('安全防护：缺少 x-crooked-man-client 标记头应返回 403，非法 Content-Type 返回 415，超限返回 413', async () => {
     const { routes } = setupHarness()
-    const handler = routes.get('/api/michengai/dsh-agency-agents/sidebar-entry')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/sidebar-entry')
 
-    // 缺少 x-michengai-client
+    // 缺少 x-crooked-man-client
     const resNoHeader = mockResponse()
-    await handler!(mockRequest('POST', { enabled: true }, { 'x-michengai-client': '' }), resNoHeader)
+    await handler!(mockRequest('POST', { enabled: true }, { 'x-crooked-man-client': '' }), resNoHeader)
     expect(resNoHeader.status).toBe(403)
 
     // 非法 Content-Type
@@ -191,7 +191,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
     const { routes } = setupHarness({}, {
       connection: { requestRejection: () => 401 },
     })
-    const handler = routes.get('/api/michengai/dsh-agency-agents/sidebar-entry')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/sidebar-entry')
 
     const res = mockResponse()
     await handler!(mockRequest('GET'), res)
@@ -200,7 +200,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
 
   it('宿主配置锁定 updater: false 时，online-update 拒绝修改并返回 403', async () => {
     const { routes } = setupHarness({ updater: false })
-    const handler = routes.get('/api/michengai/dsh-agency-agents/online-update')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/online-update')
     expect(handler).toBeDefined()
 
     // 1. GET 提示 locked: true
@@ -218,7 +218,7 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
 
   it('composer-recommend GET 与 POST 默认关闭并支持持久化更新', async () => {
     const { routes, mockSettingsState } = setupHarness()
-    const handler = routes.get('/api/michengai/dsh-agency-agents/composer-recommend')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/composer-recommend')
     expect(handler).toBeDefined()
 
     // 1. GET 默认返回 enabled: false
@@ -243,11 +243,11 @@ describe('agency-agents HTTP 管理路由 (sidebar-entry & online-update)', () =
 
   it('请求流中途异常 close 时立即终止不挂起', async () => {
     const { routes } = setupHarness()
-    const handler = routes.get('/api/michengai/dsh-agency-agents/sidebar-entry')
+    const handler = routes.get('/api/crooked-man/dsh-agency-agents/sidebar-entry')
     const listeners: Record<string, Function[]> = {}
     const abortingReq = {
       method: 'POST',
-      headers: { 'x-michengai-client': '1', 'content-type': 'application/json' },
+      headers: { 'x-crooked-man-client': '1', 'content-type': 'application/json' },
       on: (event: string, cb: Function) => {
         listeners[event] = listeners[event] ?? []
         listeners[event].push(cb)

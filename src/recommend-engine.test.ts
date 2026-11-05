@@ -117,7 +117,7 @@ describe('recommend-engine 本地极速推荐引擎', () => {
       input: {
         draft: '检查登录接口安全与越权',
         occurrences: [
-          { occurrenceId: 1, source: '@michengai/dsh-agency-agents', ref: 'security-appsec-engineer' }
+          { occurrenceId: 1, source: '@crooked-man/dsh-agency-agents', ref: 'security-appsec-engineer' }
         ]
       }
     }
@@ -126,7 +126,7 @@ describe('recommend-engine 本地极速推荐引擎', () => {
     expect(resolved.draft).toBe('检查登录接口安全与越权')
     // 关键断言：必须提取出实体 ref（'security-appsec-engineer'），绝不能降级成 source
     expect(resolved.occurrences).toContain('security-appsec-engineer')
-    expect(resolved.occurrences).not.toContain('@michengai/dsh-agency-agents')
+    expect(resolved.occurrences).not.toContain('@crooked-man/dsh-agency-agents')
 
     const results5 = recommendExpertsForTask({
       draft: resolved.draft,
@@ -146,7 +146,7 @@ describe('recommend-engine 本地极速推荐引擎', () => {
         getSnapshot: () => ({
           draft: '重构技术方案',
           draftRev: 1,
-          occurrences: [{ source: '@michengai/dsh-agency-agents', ref: 'engineering-software-architect', offset: 0 }],
+          occurrences: [{ source: '@crooked-man/dsh-agency-agents', ref: 'engineering-software-architect', offset: 0 }],
         }),
       },
       insertReference: () => true,

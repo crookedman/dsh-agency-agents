@@ -45,14 +45,14 @@ describe('setupSidebarEntry 侧边栏与更新开关生命周期', () => {
     let serverUpdate = true
 
     const callApi = vi.fn(async (path: string, options?: any) => {
-      if (path === '/api/michengai/dsh-agency-agents/sidebar-entry') {
+      if (path === '/api/crooked-man/dsh-agency-agents/sidebar-entry') {
         if (options?.method === 'POST') {
           serverSidebar = JSON.parse(options.body).enabled
           return { ok: true, enabled: serverSidebar }
         }
         return { ok: true, enabled: serverSidebar }
       }
-      if (path === '/api/michengai/dsh-agency-agents/online-update') {
+      if (path === '/api/crooked-man/dsh-agency-agents/online-update') {
         if (options?.method === 'POST') {
           serverUpdate = JSON.parse(options.body).enabled
           return { ok: true, enabled: serverUpdate }
@@ -103,8 +103,8 @@ describe('setupSidebarEntry 侧边栏与更新开关生命周期', () => {
   it('感知宿主锁定更新状态并拒绝修改', async () => {
     const { ctx } = createMockCtx()
     const callApi = vi.fn(async (path: string) => {
-      if (path === '/api/michengai/dsh-agency-agents/sidebar-entry') return { ok: true, enabled: false }
-      if (path === '/api/michengai/dsh-agency-agents/online-update') return { ok: true, enabled: false, locked: true }
+      if (path === '/api/crooked-man/dsh-agency-agents/sidebar-entry') return { ok: true, enabled: false }
+      if (path === '/api/crooked-man/dsh-agency-agents/online-update') return { ok: true, enabled: false, locked: true }
       return {}
     })
 
@@ -121,7 +121,7 @@ describe('setupSidebarEntry 侧边栏与更新开关生命周期', () => {
     await controller.setOnlineUpdate(true)
     expect(controller.isOnlineUpdateEnabled()).toBe(false)
     expect(callApi).not.toHaveBeenCalledWith(
-      '/api/michengai/dsh-agency-agents/online-update',
+      '/api/crooked-man/dsh-agency-agents/online-update',
       expect.objectContaining({ method: 'POST' }),
     )
 
@@ -131,7 +131,7 @@ describe('setupSidebarEntry 侧边栏与更新开关生命周期', () => {
   it('宿主重载或重建插槽时正确复位并重新注册', async () => {
     const { ctx, slotsMap, injectCallbacks } = createMockCtx()
     const callApi = vi.fn(async (path: string, options?: any) => {
-      if (path === '/api/michengai/dsh-agency-agents/sidebar-entry') {
+      if (path === '/api/crooked-man/dsh-agency-agents/sidebar-entry') {
         if (options?.method === 'POST') return { ok: true, enabled: JSON.parse(options.body).enabled }
         return { ok: true, enabled: true }
       }

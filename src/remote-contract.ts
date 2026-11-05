@@ -37,7 +37,7 @@ function jsonParameter(name: string, typeSymbol: string, schema: BoundarySchema,
 /** 新接口仍沿用宿主 Typert 严格参数校验与既有鉴权入口。 */
 function catalogMethod(method: string, parameters: InvocationDescriptor['parameters']): InvocationDescriptor {
   return {
-    id: `@michengai/dsh-agency-agents#agencyAgents/${method}`,
+    id: `@crooked-man/dsh-agency-agents#agencyAgents/${method}`,
     service: 'agencyAgents', namespace: 'agencyAgents', method,
     invocation: { kind: 'direct' }, parameters,
     result: strictCodec('AgencyAgentsCatalog', catalogSnapshotSchema),
@@ -54,7 +54,7 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     { method: 'setTeamEnabled', parameters: [jsonParameter('id', 'string', z.string().min(1).max(128)), jsonParameter('enabled', 'boolean', z.boolean()), revisionParameter] },
     { method: 'deleteTeam', parameters: [jsonParameter('id', 'string', z.string().min(1).max(128)), revisionParameter] },
   ].map(({ method, parameters }): InvocationDescriptor => ({
-    id: `@michengai/dsh-agency-agents#agencyAgents/${method}`, service: 'agencyAgents', namespace: 'agencyAgents', method,
+    id: `@crooked-man/dsh-agency-agents#agencyAgents/${method}`, service: 'agencyAgents', namespace: 'agencyAgents', method,
     invocation: { kind: 'direct' }, parameters, result: strictCodec('AgencyTeamsSnapshot', teamSnapshotSchema),
   })),
   catalogMethod('getCatalog', []),
@@ -71,19 +71,19 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     revisionParameter,
   ]),
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/listModels',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/listModels',
     service: 'agencyAgents', namespace: 'agencyAgents', method: 'listModels',
     invocation: { kind: 'direct' }, parameters: [],
     result: strictCodec('AgencyModelCatalog', modelCatalogSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/getCustomExpert',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/getCustomExpert',
     service: 'agencyAgents', namespace: 'agencyAgents', method: 'getCustomExpert',
     invocation: { kind: 'direct' }, parameters: [customSlugParameter],
     result: strictCodec('CustomExpertInput', expertEditSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/getEnabled',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/getEnabled',
     service: 'agencyAgents',
     namespace: 'agencyAgents',
     method: 'getEnabled',
@@ -92,7 +92,7 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     result: strictCodec('AgencyAgentsEnabledState', enabledStateSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/setEnabled',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/setEnabled',
     service: 'agencyAgents',
     namespace: 'agencyAgents',
     method: 'setEnabled',
@@ -104,7 +104,7 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     result: strictCodec('AgencyAgentsEnabledState', enabledStateSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/getPrompt',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/getPrompt',
     service: 'agencyAgents',
     namespace: 'agencyAgents',
     method: 'getPrompt',
@@ -116,7 +116,7 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     result: strictCodec('AgencyAgentsPrompt', expertPromptSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/getPendingProposal',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/getPendingProposal',
     service: 'agencyAgents',
     namespace: 'agencyAgents',
     method: 'getPendingProposal',
@@ -125,7 +125,7 @@ export const AGENCY_AGENTS_DESCRIPTORS = [
     result: strictCodec('PendingProposalResult', storedProposalSchema),
   },
   {
-    id: '@michengai/dsh-agency-agents#agencyAgents/getLatestProposal',
+    id: '@crooked-man/dsh-agency-agents#agencyAgents/getLatestProposal',
     service: 'agencyAgents',
     namespace: 'agencyAgents',
     method: 'getLatestProposal',

@@ -171,7 +171,7 @@ export function TeamsFixture() {
   }, [])
   React.useEffect(() => {
     if (!params.has('updateUI')) return
-    return observePluginUpdate({ endpoint: '/api/plugin-update', packageName: '@michengai/dsh-agency-agents', titleRowSelector: '.aag-title-row', linksSelector: '.aag-settings-links', zhName: '专家', enName: 'Experts', createIcon: createPluginUpdateIcon })
+    return observePluginUpdate({ endpoint: '/api/plugin-update', packageName: '@crooked-man/dsh-agency-agents', titleRowSelector: '.aag-title-row', linksSelector: '.aag-settings-links', zhName: '专家', enName: 'Experts', createIcon: createPluginUpdateIcon })
   }, [])
   const [draft, setDraft] = React.useState('')
   const [selected, setSelected] = React.useState('')

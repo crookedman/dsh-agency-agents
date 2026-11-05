@@ -12,9 +12,9 @@
 
   [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
   [![Bundled agents](https://img.shields.io/badge/Bundled%20agents-331-0f766e.svg)](#expert-roster)
-  [![npm package](https://img.shields.io/npm/v/%40michengai%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@michengai/dsh-agency-agents)
-  [![npm downloads](https://img.shields.io/npm/dt/%40michengai%2Fdsh-agency-agents.svg?label=npm%20downloads)](https://www.npmjs.com/package/@michengai/dsh-agency-agents)
-  [![DSH Web Plugin](https://img.shields.io/badge/DSH%20Web-Plugin-0f766e.svg)](https://github.com/MichengAI/dsh-agency-agents)
+  [![npm package](https://img.shields.io/npm/v/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![npm downloads](https://img.shields.io/npm/dt/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20downloads)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![DSH Web Plugin](https://img.shields.io/badge/DSH%20Web-Plugin-0f766e.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
   [![DSH supported through 0.2.2-rc.1](https://img.shields.io/badge/DSH-up%20to%200.2.2--rc.1-2563eb.svg)](#prerequisites)
 </div>
 
@@ -117,19 +117,19 @@ The screenshots below show the 1.0.0 interface in Chinese. Experts and expert te
 
 Filter by category or search in **Settings → Experts**, then enable the experts you need:
 
-![DSH Experts panel](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/agent-roster.png)
+![DSH Experts panel](assets/screenshots/agent-roster.png)
 
 Switch to **Expert teams** to browse the five built-in teams, filter by status, or create a custom team:
 
-![Expert teams panel](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/expert-teams.png)
+![Expert teams panel](assets/screenshots/expert-teams.png)
 
 Open team details to review its purpose, example tasks, and member responsibilities, then summon it or copy it for customization:
 
-![Expert team details](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/expert-team-details.png)
+![Expert team details](assets/screenshots/expert-team-details.png)
 
 When the host supports Agent Team and the feature is enabled, view team members and shared tasks in the native panel:
 
-![Native Agent Team panel](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/agent-team-panel.png)
+![Native Agent Team panel](assets/screenshots/agent-team-panel.png)
 
 ## DSH product ecosystem
 
@@ -138,7 +138,7 @@ For a desktop workbench, download [DSH Codex Desktop](https://github.com/Micheng
 | Plugin | What you can do |
 | --- | --- |
 | [Codex UI](https://github.com/MichengAI/dsh-codex-ui) | Organize projects and conversations, search tasks, and navigate chat turns |
-| [Agency Agents](https://github.com/MichengAI/dsh-agency-agents) | Choose and summon specialists for your task |
+| [Agency Agents](https://github.com/crooked-man-7/dsh-agency-agents) | Choose and summon specialists for your task |
 | [Skills Manager](https://github.com/MichengAI/dsh-skills-manager) | Find, enable, create, and import local skills |
 | [Archive Manager](https://github.com/MichengAI/dsh-archive-manager) | Search, restore, or clean up archived conversations |
 | [IM Connect](https://github.com/MichengAI/dsh-im-connect) | Send tasks and receive replies through messaging platforms |
@@ -170,7 +170,7 @@ The installation commands below use the official npm registry.
 Send the prompt below to any agent that can run terminal commands on your computer. Replace `web` with your actual profile. Once installed, use the plugin in DSH.
 
 ```text
-Install the DSH plugin @michengai/dsh-agency-agents into my local web profile by running: dsh plugin --profile web add @michengai/dsh-agency-agents@latest --registry=https://registry.npmjs.org/. Then run dsh --profile web --dump-config, confirm the configuration includes agency-agents, agency-agents-remote, and explain how to reload DSH and start using the plugin.
+Install the DSH plugin @crooked-man/dsh-agency-agents into my local web profile by running: dsh plugin --profile web add @crooked-man/dsh-agency-agents@latest --registry=https://registry.npmjs.org/. Then run dsh --profile web --dump-config, confirm the configuration includes agency-agents, agency-agents-remote, and explain how to reload DSH and start using the plugin.
 ```
 
 ### Install the latest package from the official npm registry
@@ -180,7 +180,7 @@ Run this from any PowerShell directory:
 ```powershell
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-dsh plugin --profile web add @michengai/dsh-agency-agents@latest --registry=https://registry.npmjs.org/
+dsh plugin --profile web add @crooked-man/dsh-agency-agents@latest --registry=https://registry.npmjs.org/
 dsh --profile web --dump-config
 ```
 
@@ -192,7 +192,7 @@ The configuration output should contain `agency-agents` and `agency-agents-remot
 ## Plugin Configuration & Toggles
 
 The plugin follows standard DSH bundle configuration conventions. Options are located at:
-> **Sidebar → Plugins → Click `@michengai/dsh-agency-agents`** (the host's `plugins.bundle.config` slot).
+> **Sidebar → Plugins → Click `@crooked-man/dsh-agency-agents`** (the host's `plugins.bundle.config` slot).
 
 Two native switches are available:
 
@@ -839,7 +839,7 @@ Use this for debugging or unpublished changes. The cloned directory becomes the 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 Set-Location D:\Repository\deepseek-harness-plugin
-git clone https://github.com/MichengAI/dsh-agency-agents.git
+git clone https://github.com/crooked-man-7/dsh-agency-agents.git
 Set-Location .\dsh-agency-agents
 pnpm install --frozen-lockfile
 pnpm build

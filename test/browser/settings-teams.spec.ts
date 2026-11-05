@@ -389,7 +389,7 @@ test('一级页签使用官方分段页签，与来源筛选保持紧凑层级',
 })
 
 test('切换团队保留同一个公共头部及宿主注入内容', async ({ page }) => {
-  await page.route('**/api/plugin-update', route => route.fulfill({ json: { packageName: '@michengai/dsh-agency-agents', currentVersion: '1.0.0', latestVersion: '1.0.1', updateAvailable: true, latestCheckFailed: false, profileName: 'test', canAutoUpdate: false } }))
+  await page.route('**/api/plugin-update', route => route.fulfill({ json: { packageName: '@crooked-man/dsh-agency-agents', currentVersion: '1.0.0', latestVersion: '1.0.1', updateAvailable: true, latestCheckFailed: false, profileName: 'test', canAutoUpdate: false } }))
   await page.goto('/?teams&settings&updateUI')
   const header = page.locator('main .aag-title-row').first()
   await expect(header.locator('.mpi-version')).toHaveText('v1.0.0')

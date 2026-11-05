@@ -28,7 +28,7 @@ import { validateExpertProposal, validateTeamProposal } from './creation-contrac
  * zero-width space is inserted between the opening braces so the text stays
  * visually identical while the interpolator no longer sees a `{{`.
  *
- * @module @michengai/dsh-agency-agents
+ * @module @crooked-man/dsh-agency-agents
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -566,7 +566,7 @@ export function resolveExpert<T extends { readonly slug: string; readonly name: 
   throw new Error(formatHost(locale, 'error.expertMissing', { query: String(query) }))
 }
 
-const SETTINGS_API_HEADER = 'x-michengai-client'
+const SETTINGS_API_HEADER = 'x-crooked-man-client'
 const MAX_SETTINGS_BODY_BYTES = 64 * 1024
 
 function header(request: { headers?: Record<string, string | string[] | undefined> }, name: string): string | undefined {
@@ -738,8 +738,8 @@ export function apply(ctx: Context, config: Config): void {
   const webServer = (ctx as Context & { webServer?: { register?: (route: any) => () => void } }).webServer
   if (typeof webServer?.register === 'function') {
     const mountUpdater = () => registerPluginUpdater(ctx, {
-      endpoint: '/api/michengai/dsh-agency-agents/update',
-      packageName: '@michengai/dsh-agency-agents',
+      endpoint: '/api/crooked-man/dsh-agency-agents/update',
+      packageName: '@crooked-man/dsh-agency-agents',
       manifestUrl: new URL('../package.json', import.meta.url),
       isEnabled: async () => !hostUpdateDisabled && settingsSource().onlineUpdate !== false,
     })
@@ -774,7 +774,7 @@ export function apply(ctx: Context, config: Config): void {
       const disposers: Array<() => void> = []
       disposers.push(webServer.register!({
         kind: 'exact',
-        path: '/api/michengai/dsh-agency-agents/sidebar-entry',
+        path: '/api/crooked-man/dsh-agency-agents/sidebar-entry',
         handler: async (request: any, response: any) => {
           if (!checkAuthAndMutation(request, response)) return
           if (request.method === 'GET' || request.method === 'HEAD') {
@@ -824,7 +824,7 @@ export function apply(ctx: Context, config: Config): void {
 
       disposers.push(webServer.register!({
         kind: 'exact',
-        path: '/api/michengai/dsh-agency-agents/online-update',
+        path: '/api/crooked-man/dsh-agency-agents/online-update',
         handler: async (request: any, response: any) => {
           if (!checkAuthAndMutation(request, response)) return
           if (request.method === 'GET' || request.method === 'HEAD') {
@@ -865,7 +865,7 @@ export function apply(ctx: Context, config: Config): void {
 
       disposers.push(webServer.register!({
         kind: 'exact',
-        path: '/api/michengai/dsh-agency-agents/composer-recommend',
+        path: '/api/crooked-man/dsh-agency-agents/composer-recommend',
         handler: async (request: any, response: any) => {
           if (!checkAuthAndMutation(request, response)) return
           if (request.method === 'GET' || request.method === 'HEAD') {

@@ -1,5 +1,5 @@
 {
-  "name": "@michengai/dsh-agency-agents",
+  "name": "@crooked-man/dsh-agency-agents",
   "description": "DSH Agency Agents — 为 DeepSeek Harness 提供 331 名可召唤的专业智能体 · 331 summonable domain experts for DeepSeek Harness",
   "version": "1.2.28",
   "type": "module",
@@ -75,7 +75,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MichengAI/dsh-agency-agents.git"
+    "url": "https://github.com/crooked-man-7/dsh-agency-agents.git"
   },
   "publishConfig": {
     "access": "public",

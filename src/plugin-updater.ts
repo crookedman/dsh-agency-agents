@@ -8,7 +8,7 @@ import { homedir } from 'node:os'
 import { basename, delimiter, dirname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const PLUGIN_UPDATE_HEADER = 'x-michengai-plugin-update'
+export const PLUGIN_UPDATE_HEADER = 'x-crooked-man-plugin-update'
 export const PLUGIN_UPDATE_IPC = 'apply-plugin-updates'
 
 type HostRequest = { method?: string; url?: string; headers?: Record<string, string | string[] | undefined>; socket?: { remoteAddress?: string } }

@@ -29,7 +29,7 @@ check('包许可证为 Apache-2.0', packageJson.license === 'Apache-2.0')
 check('Git 安装不依赖被拦截的构建脚本', packageJson.scripts?.prepare === undefined && !(await readFile(new URL('../.gitignore', import.meta.url), 'utf8')).split(/\r?\n/u).includes('/lib/'))
 check(
   '包仓库元数据与发布溯源仓库一致',
-  packageJson.repository?.type === 'git' && packageJson.repository?.url === 'https://github.com/MichengAI/dsh-agency-agents.git',
+  packageJson.repository?.type === 'git' && packageJson.repository?.url === 'https://github.com/crooked-man-7/dsh-agency-agents.git',
 )
 
 for (const file of ['../lib/index.js', '../lib/remote.js', '../lib/client.js', '../cordis.patch.yml', '../LICENSE', '../NOTICE', '../README.zh-CN.md', '../assets/agency-agents/LICENSE', '../assets/agency-agents-zh/LICENSE']) {

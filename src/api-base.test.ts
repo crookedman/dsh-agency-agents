@@ -24,22 +24,22 @@ describe('resolveApiUrl (API 基址反代解析)', () => {
 
   it('无 document 环境下原样返回路径', () => {
     setDocumentBase(undefined)
-    expect(resolveApiUrl('/api/michengai/dsh-agency-agents/update')).toBe('/api/michengai/dsh-agency-agents/update')
+    expect(resolveApiUrl('/api/crooked-man/dsh-agency-agents/update')).toBe('/api/crooked-man/dsh-agency-agents/update')
   })
 
   it('站点根路径 (https://domain.com/) 下正确解析为绝对 URL', () => {
     setDocumentBase('https://domain.com/')
-    expect(resolveApiUrl('/api/michengai/dsh-agency-agents/update')).toBe('https://domain.com/api/michengai/dsh-agency-agents/update')
+    expect(resolveApiUrl('/api/crooked-man/dsh-agency-agents/update')).toBe('https://domain.com/api/crooked-man/dsh-agency-agents/update')
   })
 
   it('反向代理子路径带斜杠 (https://domain.com/app/dsh/) 下保留前缀', () => {
     setDocumentBase('https://domain.com/app/dsh/')
-    expect(resolveApiUrl('/api/michengai/dsh-agency-agents/update')).toBe('https://domain.com/app/dsh/api/michengai/dsh-agency-agents/update')
+    expect(resolveApiUrl('/api/crooked-man/dsh-agency-agents/update')).toBe('https://domain.com/app/dsh/api/crooked-man/dsh-agency-agents/update')
   })
 
   it('反向代理子路径无斜杠 (https://domain.com/app/dsh) 自动补齐斜杠并保留前缀', () => {
     setDocumentBase('https://domain.com/app/dsh')
-    expect(resolveApiUrl('/api/michengai/dsh-agency-agents/update')).toBe('https://domain.com/app/dsh/api/michengai/dsh-agency-agents/update')
+    expect(resolveApiUrl('/api/crooked-man/dsh-agency-agents/update')).toBe('https://domain.com/app/dsh/api/crooked-man/dsh-agency-agents/update')
   })
 
   it('相对路径、完整 URL 与协议相对 URL 原样返回', () => {

@@ -12,9 +12,9 @@
 
   [![许可证：Apache-2.0](https://img.shields.io/badge/许可证-Apache--2.0-blue.svg)](LICENSE)
   [![内置智能体](https://img.shields.io/badge/内置智能体-331-0f766e.svg)](#专家列表)
-  [![npm package](https://img.shields.io/npm/v/%40michengai%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@michengai/dsh-agency-agents)
-  [![npm 下载量](https://img.shields.io/npm/dt/%40michengai%2Fdsh-agency-agents.svg?label=npm%20%E4%B8%8B%E8%BD%BD%E9%87%8F)](https://www.npmjs.com/package/@michengai/dsh-agency-agents)
-  [![DSH Web Plugin](https://img.shields.io/badge/DSH%20Web-Plugin-0f766e.svg)](https://github.com/MichengAI/dsh-agency-agents)
+  [![npm package](https://img.shields.io/npm/v/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![npm 下载量](https://img.shields.io/npm/dt/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20%E4%B8%8B%E8%BD%BD%E9%87%8F)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![DSH Web Plugin](https://img.shields.io/badge/DSH%20Web-Plugin-0f766e.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
   [![DSH 支持至 0.2.2-rc.1](https://img.shields.io/badge/DSH-%E6%94%AF%E6%8C%81%E8%87%B3%200.2.2--rc.1-2563eb.svg)](#前置条件)
 </div>
 
@@ -117,19 +117,19 @@
 
 在「设置 → 专家」中按分类筛选或搜索，再启用需要的专家：
 
-![DSH 专家面板](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/agent-roster.png)
+![DSH 专家面板](assets/screenshots/agent-roster.png)
 
 切换到「专家团」，浏览五个内置专家团、按状态筛选，或新建自定义专家团：
 
-![专家团面板](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/expert-teams.png)
+![专家团面板](assets/screenshots/expert-teams.png)
 
 打开团队详情，查看适用场景、任务示例和成员分工，再召唤团队或复制并自定义：
 
-![专家团详情](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/expert-team-details.png)
+![专家团详情](assets/screenshots/expert-team-details.png)
 
 宿主支持且已启用 Agent Team 时，可在原生面板查看团队成员和共享任务：
 
-![原生 Agent Team 面板](https://raw.githubusercontent.com/MichengAI/dsh-agency-agents/5cdbd07fda18075eab186aa972b47ab01451d244/assets/screenshots/agent-team-panel.png)
+![原生 Agent Team 面板](assets/screenshots/agent-team-panel.png)
 
 ## DSH 产品生态
 
@@ -138,7 +138,7 @@
 | 插件 | 你可以用它做什么 |
 | --- | --- |
 | [Codex UI](https://github.com/MichengAI/dsh-codex-ui) | 整理项目与会话、搜索任务、跳转对话轮次 |
-| [Agency Agents](https://github.com/MichengAI/dsh-agency-agents) | 按任务选择并召唤专业角色 |
+| [Agency Agents](https://github.com/crooked-man-7/dsh-agency-agents) | 按任务选择并召唤专业角色 |
 | [Skills Manager](https://github.com/MichengAI/dsh-skills-manager) | 统一查找、启停、创建和导入本机技能 |
 | [Archive Manager](https://github.com/MichengAI/dsh-archive-manager) | 搜索、恢复或清理已归档会话 |
 | [IM Connect](https://github.com/MichengAI/dsh-im-connect) | 从消息平台下任务、收回复 |
@@ -170,7 +170,7 @@ DSH 的 `dsh.client.inject` 声明浏览器模块的加载顺序；宿主模块�
 把下面这段话发给任意能够执行本机终端命令的 Agent。将 `web` 替换为实际使用的 profile；安装完成后，在 DSH 中使用本插件。
 
 ```text
-请将 DSH 插件 @michengai/dsh-agency-agents 安装到本机 web profile，执行：dsh plugin --profile web add @michengai/dsh-agency-agents@latest --registry=https://registry.npmjs.org/。安装后执行 dsh --profile web --dump-config，确认配置包含 agency-agents, agency-agents-remote，并告诉我如何重新加载 DSH 和开始使用。
+请将 DSH 插件 @crooked-man/dsh-agency-agents 安装到本机 web profile，执行：dsh plugin --profile web add @crooked-man/dsh-agency-agents@latest --registry=https://registry.npmjs.org/。安装后执行 dsh --profile web --dump-config，确认配置包含 agency-agents, agency-agents-remote，并告诉我如何重新加载 DSH 和开始使用。
 ```
 
 ### 从官方 npm 安装最新版
@@ -180,7 +180,7 @@ DSH 的 `dsh.client.inject` 声明浏览器模块的加载顺序；宿主模块�
 ```powershell
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-dsh plugin --profile web add @michengai/dsh-agency-agents@latest --registry=https://registry.npmjs.org/
+dsh plugin --profile web add @crooked-man/dsh-agency-agents@latest --registry=https://registry.npmjs.org/
 dsh --profile web --dump-config
 ```
 
@@ -192,7 +192,7 @@ dsh --profile web --dump-config
 ## 插件配置与可选开关
 
 插件遵循 DSH 官方扩展配置规范，配置项位于：
-> **主界面侧边栏「插件」→ 点击 `@michengai/dsh-agency-agents` 详情页**（对应宿主 `plugins.bundle.config` 槽位）。
+> **主界面侧边栏「插件」→ 点击 `@crooked-man/dsh-agency-agents` 详情页**（对应宿主 `plugins.bundle.config` 槽位）。
 
 此处提供两个原生扁平行开关：
 
@@ -839,7 +839,7 @@ GitHub 与 npm 都包含可直接运行的 `lib`。克隆后如果改了源码�
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 Set-Location D:\Repository\deepseek-harness-plugin
-git clone https://github.com/MichengAI/dsh-agency-agents.git
+git clone https://github.com/crooked-man-7/dsh-agency-agents.git
 Set-Location .\dsh-agency-agents
 pnpm install --frozen-lockfile
 pnpm build

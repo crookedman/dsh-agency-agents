@@ -61,7 +61,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 }
 
-const PLUGIN_ID = '@michengai/dsh-agency-agents'
+const PLUGIN_ID = '@crooked-man/dsh-agency-agents'
 /** 本插件客户端词条字典命名空间。 */
 const NS = 'agency'
 
@@ -170,12 +170,12 @@ type ClientContext = CordisClientContext & {
 /** 设置页标题旁的公开项目入口，和归档管理器保持一致。 */
 export const SETTINGS_GITHUB_LINKS = [
   {
-    href: 'https://github.com/MichengAI/dsh-agency-agents',
+    href: 'https://github.com/crooked-man-7/dsh-agency-agents',
     labelKey: 'settings.viewProject',
     icon: 'github',
   },
   {
-    href: 'https://github.com/MichengAI/dsh-agency-agents/issues',
+    href: 'https://github.com/crooked-man-7/dsh-agency-agents/issues',
     labelKey: 'settings.feedback',
     icon: 'feedback',
   },
@@ -2052,7 +2052,7 @@ export async function apply(ctx: ClientContext): Promise<() => void> {
   const callApi = async (path: string, options?: RequestInit): Promise<any> => {
     const url = resolveApiUrl(path)
     const headers = Object.assign({
-      'x-michengai-client': '1',
+      'x-crooked-man-client': '1',
     }, options?.headers)
     const res = await fetch(url, { ...options, headers, credentials: 'same-origin', cache: 'no-store' })
     if (!res.ok) {
@@ -2102,8 +2102,8 @@ export async function apply(ctx: ClientContext): Promise<() => void> {
   }, 'agency-agents: sidebar entry')
 
   ctx.effect(() => observePluginUpdate({
-    endpoint: '/api/michengai/dsh-agency-agents/update',
-    packageName: '@michengai/dsh-agency-agents',
+    endpoint: '/api/crooked-man/dsh-agency-agents/update',
+    packageName: '@crooked-man/dsh-agency-agents',
     titleRowSelector: '.aag-title-row',
     linksSelector: '.aag-settings-links',
     zhName: '专家',

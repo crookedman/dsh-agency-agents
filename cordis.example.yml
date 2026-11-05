@@ -16,7 +16,7 @@
 
 # 宿主组合形式（对所有会话生效）：
 - id: agency-experts
-  name: '@michengai/dsh-agency-agents'
+  name: '@crooked-man/dsh-agency-agents'
   config:
     root: 'D:\Repository\agency-agents'
     provider: spawn
