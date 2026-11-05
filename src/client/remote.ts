@@ -70,7 +70,7 @@ declare module '@deepseek-ai/dsh-typert-protocol' {
 }
 
 export const TYPERT_REMOTE: TypertRemoteContribution = {
-  package: '@crooked-man/dsh-agency-agents',
+  package: '@crookedman/dsh-agency-agents',
   descriptors: AGENCY_AGENTS_DESCRIPTORS,
 }
 export default TYPERT_REMOTE

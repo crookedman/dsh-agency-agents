@@ -10,7 +10,7 @@
 
   [简体中文](README.zh-CN.md) · [Changelog](CHANGELOG.md) · [Apache-2.0](LICENSE)
 
-  [![npm package](https://img.shields.io/npm/v/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![npm package](https://img.shields.io/npm/v/%40crookedman%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crookedman/dsh-agency-agents)
   [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
   [![GitHub](https://img.shields.io/badge/GitHub-crooked--man--7-181717.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
 </div>
@@ -23,7 +23,7 @@
 This repository is a personal fork of **[MichengAI/dsh-agency-agents](https://github.com/MichengAI/dsh-agency-agents)**.
 
 Upstream gives DeepSeek Harness 331 summonable domain experts plus expert teams. This fork builds on
-upstream 1.2.27 and publishes under `@crooked-man/dsh-agency-agents`; the roster, the agent data and
+upstream 1.2.27 and publishes under `@crookedman/dsh-agency-agents`; the roster, the agent data and
 every other feature are unchanged.
 
 ## What this fork adds
@@ -37,7 +37,7 @@ every other feature are unchanged.
 - **Card badge**: the model badge is width-capped and ellipsized, so a long model name no longer pushes
   the expert name out of the card header; hover shows the full provider/model.
 - **Own package identity**: package name, cordis mount names, remote service ids and HTTP routes live
-  under the `@crooked-man` scope so this fork can coexist with upstream by package name. The settings
+  under the `@crookedman` scope so this fork can coexist with upstream by package name. The settings
   namespace stays `agency-agents`, so switching packages keeps existing configuration.
 
 ## Install
@@ -45,7 +45,7 @@ every other feature are unchanged.
 Requires DeepSeek Harness `>= 0.2.0-rc.1`.
 
 ```powershell
-dsh plugin --profile desktop add @crooked-man/dsh-agency-agents@1.2.28
+dsh plugin --profile desktop add @crookedman/dsh-agency-agents@1.2.28
 ```
 
 Replace `desktop` with the profile you use (for example `web`). To upgrade, rerun with a new version.

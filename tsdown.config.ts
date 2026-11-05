@@ -40,7 +40,7 @@ const PLATFORM_MODULES = [
 
 const CLIENT_EXTERNALS: readonly string[] = PLATFORM_MODULES
 
-const ID = '@crooked-man/dsh-agency-agents'
+const ID = '@crookedman/dsh-agency-agents'
 
 const node: UserConfig = {
   name: ID,

@@ -10,7 +10,7 @@
 
   [English](README.en.md) · [更新日志](CHANGELOG.zh-CN.md) · [Apache-2.0](LICENSE)
 
-  [![npm package](https://img.shields.io/npm/v/%40crooked-man%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crooked-man/dsh-agency-agents)
+  [![npm package](https://img.shields.io/npm/v/%40crookedman%2Fdsh-agency-agents.svg?label=npm%20package)](https://www.npmjs.com/package/@crookedman/dsh-agency-agents)
   [![许可证：Apache-2.0](https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-Apache--2.0-blue.svg)](LICENSE)
   [![GitHub](https://img.shields.io/badge/GitHub-crooked--man--7-181717.svg)](https://github.com/crooked-man-7/dsh-agency-agents)
 </div>
@@ -23,7 +23,7 @@
 本仓库是 **[MichengAI/dsh-agency-agents](https://github.com/MichengAI/dsh-agency-agents)** 的个人分支（fork）。
 
 上游为 DeepSeek Harness 提供 331 名可召唤的领域智能体与「专家团」；本分支基于上游 1.2.27 改造，
-把包名与发布渠道换到 `@crooked-man/dsh-agency-agents`，专家名册、智能体数据与其余功能与上游保持一致。
+把包名与发布渠道换到 `@crookedman/dsh-agency-agents`，专家名册、智能体数据与其余功能与上游保持一致。
 
 ## 相对上游加了什么
 
@@ -32,7 +32,7 @@
 - **专家团按模型自动降级**：原生 Agent Team 没有成员级模型参数，因此团队中只要有成员配置了模型，
   本次自动改用普通子代理执行以保证设置生效；provider 不支持时明确报错，而不是静默按父 Agent 运行。
 - **卡片模型徽标**：限宽并省略显示，长模型名不再把专家名挤出标题行；悬停可看完整 provider/model。
-- **独立发布身份**：包名、Cordis 挂载名、Remote 服务 id 与 HTTP 路由都在 `@crooked-man` 域下，
+- **独立发布身份**：包名、Cordis 挂载名、Remote 服务 id 与 HTTP 路由都在 `@crookedman` 域下，
   可与上游版本按包名区分；设置命名空间仍是 `agency-agents`，因此换包不丢已有配置。
 
 ## 安装
@@ -40,7 +40,7 @@
 需要 DeepSeek Harness `>= 0.2.0-rc.1`。
 
 ```powershell
-dsh plugin --profile desktop add @crooked-man/dsh-agency-agents@1.2.28
+dsh plugin --profile desktop add @crookedman/dsh-agency-agents@1.2.28
 ```
 
 也可以把命令里的 `desktop` 换成你使用的 profile 名（如 `web`）。升级时把版本号换掉重跑即可。

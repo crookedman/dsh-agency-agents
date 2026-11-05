@@ -3,6 +3,6 @@
 - insert:
     # 独立顶层行，供 api-gateway 从根服务表发现 agencyAgents Remote 路由。
     - id: agency-agents-remote
-      name: '@crooked-man/dsh-agency-agents/remote'
+      name: '@crookedman/dsh-agency-agents/remote'
     - id: agency-agents
-      name: '@crooked-man/dsh-agency-agents'
+      name: '@crookedman/dsh-agency-agents'

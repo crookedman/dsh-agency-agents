@@ -34,7 +34,7 @@ function personaSource(ctx: Context): AgencyPersonaSource {
  * 后加载的外部插件服务。
  */
 const TYPERT = {
-  package: '@crooked-man/dsh-agency-agents',
+  package: '@crookedman/dsh-agency-agents',
   face: 'host',
   schemas: [],
   model: { services: [], events: [], objects: [] },

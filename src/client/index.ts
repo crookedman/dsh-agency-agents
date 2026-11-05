@@ -61,7 +61,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 }
 
-const PLUGIN_ID = '@crooked-man/dsh-agency-agents'
+const PLUGIN_ID = '@crookedman/dsh-agency-agents'
 /** 本插件客户端词条字典命名空间。 */
 const NS = 'agency'
 
@@ -2052,7 +2052,7 @@ export async function apply(ctx: ClientContext): Promise<() => void> {
   const callApi = async (path: string, options?: RequestInit): Promise<any> => {
     const url = resolveApiUrl(path)
     const headers = Object.assign({
-      'x-crooked-man-client': '1',
+      'x-crookedman-client': '1',
     }, options?.headers)
     const res = await fetch(url, { ...options, headers, credentials: 'same-origin', cache: 'no-store' })
     if (!res.ok) {
@@ -2102,8 +2102,8 @@ export async function apply(ctx: ClientContext): Promise<() => void> {
   }, 'agency-agents: sidebar entry')
 
   ctx.effect(() => observePluginUpdate({
-    endpoint: '/api/crooked-man/dsh-agency-agents/update',
-    packageName: '@crooked-man/dsh-agency-agents',
+    endpoint: '/api/crookedman/dsh-agency-agents/update',
+    packageName: '@crookedman/dsh-agency-agents',
     titleRowSelector: '.aag-title-row',
     linksSelector: '.aag-settings-links',
     zhName: '专家',

@@ -50,8 +50,8 @@ describe('独立插件更新', () => {
   })
 
   it('手工命令锁定当前 profile、包名、版本和官方源', () => {
-    expect(manualPluginUpdateCommand('web', '@crooked-man/dsh-agency-agents', '0.1.33')).toBe(
-      'dsh plugin --profile web add @crooked-man/dsh-agency-agents@0.1.33 --registry=https://registry.npmjs.org/',
+    expect(manualPluginUpdateCommand('web', '@crookedman/dsh-agency-agents', '0.1.33')).toBe(
+      'dsh plugin --profile web add @crookedman/dsh-agency-agents@0.1.33 --registry=https://registry.npmjs.org/',
     )
   })
 
@@ -71,7 +71,7 @@ describe('独立插件更新', () => {
     const client = await readFile(new URL('./client/index.ts', import.meta.url), 'utf8')
     const updateUi = await readFile(new URL('./client/plugin-update-ui.ts', import.meta.url), 'utf8')
     const host = await readFile(new URL('./index.ts', import.meta.url), 'utf8')
-    expect(client).toMatch(/packageName:\s*["']@crooked-man\/dsh-agency-agents["']/)
+    expect(client).toMatch(/packageName:\s*["']@crookedman\/dsh-agency-agents["']/)
     expect(client).toMatch(/titleRowSelector:\s*["']\.aag-title-row["']/)
     expect(client).toMatch(/zhName:\s*["']专家["']/)
     expect(client).toMatch(/enName:\s*["']Experts["']/)
@@ -87,7 +87,7 @@ describe('独立插件更新', () => {
     expect(updateUi).toContain('value.latestCheckFailed')
     expect(updateUi).toContain("color: '#e8b15a'")
     expect(updateUi).toContain('manualHintDesktop')
-    expect(host).toMatch(/endpoint:\s*["']\/api\/crooked-man\/dsh-agency-agents\/update["']/)
+    expect(host).toMatch(/endpoint:\s*["']\/api\/crookedman\/dsh-agency-agents\/update["']/)
     expect(await readFile(new URL('./plugin-updater.ts', import.meta.url), 'utf8')).toContain('const notifyParent = shouldNotifyParent(target)')
     expect(await readFile(new URL('./plugin-updater.ts', import.meta.url), 'utf8')).toContain('isDshCliEntry')
   })

@@ -1,6 +1,6 @@
 # 上游来源
 
-本目录包含 [The Agency](https://github.com/msitarzewski/agency-agents) 的智能体 persona 快照，供 `@crooked-man/dsh-agency-agents` 零配置运行。
+本目录包含 [The Agency](https://github.com/msitarzewski/agency-agents) 的智能体 persona 快照，供 `@crookedman/dsh-agency-agents` 零配置运行。
 
 - 来源：`https://github.com/msitarzewski/agency-agents`
 - 当前同步基线：`3c9588880b7cafaec325a104899fd8bbe27e7d72`（2026-08-26）。

@@ -1,5 +1,5 @@
 {
-  "name": "@crooked-man/dsh-agency-agents",
+  "name": "@crookedman/dsh-agency-agents",
   "description": "DSH Agency Agents — 为 DeepSeek Harness 提供 331 名可召唤的专业智能体 · 331 summonable domain experts for DeepSeek Harness",
   "version": "1.2.28",
   "type": "module",

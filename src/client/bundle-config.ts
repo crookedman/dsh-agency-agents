@@ -3,7 +3,7 @@ import * as primitives from '@deepseek-ai/dsh-client-ui-primitives'
 import { resolveApiUrl } from '../api-base.js'
 import type { EntryLocation } from '../settings-compat.js'
 
-export const BUNDLE_KEY = '@crooked-man/dsh-agency-agents'
+export const BUNDLE_KEY = '@crookedman/dsh-agency-agents'
 export const SIDEBAR_PANEL_ID = 'agency-agents'
 export const SIDEBAR_PANEL_ORDER = 4
 
@@ -338,9 +338,9 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
       try { options.onLocationChange(next) } catch {}
     }
     try {
-      await callApi('/api/crooked-man/dsh-agency-agents/sidebar-entry', {
+      await callApi('/api/crookedman/dsh-agency-agents/sidebar-entry', {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-crooked-man-client': '1' },
+        headers: { 'content-type': 'application/json', 'x-crookedman-client': '1' },
         body: JSON.stringify({ location: next }),
       })
       return next
@@ -376,9 +376,9 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
       try { options.onComposerRecommendChange(next) } catch {}
     }
     try {
-      await callApi('/api/crooked-man/dsh-agency-agents/composer-recommend', {
+      await callApi('/api/crookedman/dsh-agency-agents/composer-recommend', {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-crooked-man-client': '1' },
+        headers: { 'content-type': 'application/json', 'x-crookedman-client': '1' },
         body: JSON.stringify({ enabled: next }),
       })
       if (currentEpoch === recommendEpoch && typeof options.onComposerRecommendChange === 'function') {
@@ -407,9 +407,9 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
       try { options.onOnlineUpdateChange(next) } catch {}
     }
     try {
-      await callApi('/api/crooked-man/dsh-agency-agents/online-update', {
+      await callApi('/api/crookedman/dsh-agency-agents/online-update', {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-crooked-man-client': '1' },
+        headers: { 'content-type': 'application/json', 'x-crookedman-client': '1' },
         body: JSON.stringify({ enabled: next }),
       })
       if (typeof options.onOnlineUpdateChange === 'function') {
@@ -429,7 +429,7 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
   }
 
   const loadEpoch = epoch
-  callApi('/api/crooked-man/dsh-agency-agents/sidebar-entry')
+  callApi('/api/crookedman/dsh-agency-agents/sidebar-entry')
     .then((res: any) => {
       if (epoch === loadEpoch && res) {
         if (res.location === 'both' || res.location === 'sidebar' || res.location === 'settings') {
@@ -447,7 +447,7 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
     .catch(() => {})
 
   const loadUpdateEpoch = updateEpoch
-  callApi('/api/crooked-man/dsh-agency-agents/online-update')
+  callApi('/api/crookedman/dsh-agency-agents/online-update')
     .then((res: any) => {
       if (updateEpoch === loadUpdateEpoch && res) {
         if (typeof res.enabled === 'boolean') onlineUpdateEnabled = res.enabled
@@ -461,7 +461,7 @@ export function setupSidebarEntry(ctx: any, options: SetupSidebarOptions): Sideb
     .catch(() => {})
 
   const loadRecommendEpoch = recommendEpoch
-  callApi('/api/crooked-man/dsh-agency-agents/composer-recommend')
+  callApi('/api/crookedman/dsh-agency-agents/composer-recommend')
     .then((res: any) => {
       if (recommendEpoch === loadRecommendEpoch && res && typeof res.enabled === 'boolean') {
         composerRecommendEnabled = res.enabled
