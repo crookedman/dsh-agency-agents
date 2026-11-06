@@ -1,4 +1,10 @@
 # Changelog
+## [1.2.30] - 2026-11-06
+
+### Release process
+
+- **Trusted publishing through GitHub Actions restored**: this version ships from the tag-triggered pipeline (full gate first, then OIDC trusted publishing), carries a provenance attestation, and the pipeline creates the GitHub release automatically. Functionally identical to `1.2.29`.
+
 ## [1.2.29] - 2026-11-05
 
 ### Changes
